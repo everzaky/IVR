@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, sessions
 from users_model import UsersModel
 from db import DB
 from category_form import CategoryForm
 from category_model import CategoryModel
 from product_form import ProductForm
+from registration_form import RegistrationForm
 import os
 
 
@@ -66,6 +67,22 @@ def create_product():
         img.save(os.path.join(app.config["UPLOAD_FOLDER"], img.filename))
     return render_template("product.html", form = Pf)
 
+@app.route('/register', methods=["GET", "POST"])
+def login():
+    lf = RegistrationForm()
+    args=[]
+    um = UsersModel(db.get_connection())
+    if (request.method=="POST"):
+        args+=["post"]
+        if (um.find(lf.login.data)[0]):
+            args+=["exists"]
+        if (um.find_email(lf.email.data)[0]):
+            args+=['email_exists']
+        if ("exists" not in args and "email_exists" not in args):
+            um.insert(lf.login.data, lf.email.data, lf.password.data, "user", '', lf.sales_notif.data, lf.sales_notif_fav_products.data)
+            os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data)
+            os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data+"\\"+"favourite_templates")
+    return render_template('registration.html', form = lf, args=args)
 
 if __name__ == '__main__':
     app.run(debug=True)

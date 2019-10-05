@@ -11,16 +11,18 @@ class UsersModel:
                              email VARCHAR(128), 
                              password VARCHAR(128),
                              rights VARCHAR(50), 
-                             favourite_products TEXT
+                             favourite_products TEXT, 
+                             ready_to_get_notifications_of_sales BOOLEAN,
+                             ready_to_get_notifications_of_sales_of_favourite_products BOOLEAN
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, user_name, email, password, rights):
+    def insert(self, user_name, email, password, rights, favourite_products, ready_to_get_notifications_of_sales, ready_to_get_notifications_of_sales_of_favourite_products):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO users 
-                          (user_name, email, password, rights) 
-                          VALUES (?,?,?,?)''', (user_name, email, password, rights,))
+                          (user_name, email, password, rights, favourite_products, ready_to_get_notifications_of_sales, ready_to_get_notifications_of_sales_of_favourite_products) 
+                          VALUES (?,?,?,?, ?, ?, ?)''', (user_name, email, password, rights, favourite_products, ready_to_get_notifications_of_sales, ready_to_get_notifications_of_sales_of_favourite_products, ))
         cursor.close()
         self.connection.commit()
 
