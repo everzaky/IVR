@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% if text=="write_email"%}
+    <form method = "post">
+        <label>Введите email, чтобы узнать логин</label>
+        <br>
+        {{ form.email }}
+        <br>
+        {{ form.submit }}
+    </form>
+    {% endif %}
+    {% if text=="email_was_sent" %}
+        <p>Письмо успешно отправлено на почту</p>
+    {% endif %}
+</body>
+</html>

@@ -26,9 +26,43 @@ class UsersModel:
         cursor.close()
         self.connection.commit()
 
+    def update(self, user_name, email=None, password=None, rights=None, favourite_products=None, ready_to_get_notifications_of_sales=None, ready_to_get_notifications_of_sales_of_favourite_products=None):
+        cursor=self.connection.cursor()
+        if (email != None):
+            cursor.execute('''UPDATE users SET email = ? WHERE user_name = ?''', (email, user_name,))
+        if (password != None):
+            cursor.execute('''UPDATE users SET password = ? WHERE user_name = ?''', (password, user_name,))
+        if (rights != None):
+            cursor.execute('''UPDATE users SET rights = ? WHERE user_name = ?''', (rights, user_name,))
+        if (favourite_products != None):
+            cursor.execute('''UPDATE users SET favourite_products = ? WHERE user_name = ?''', (favourite_products, user_name,))
+        if (ready_to_get_notifications_of_sales != None):
+            cursor.execute('''UPDATE users SET ready_to_get_notifications_of_sales = ? WHERE user_name = ?''', (ready_to_get_notifications_of_sales, user_name,))
+        if (ready_to_get_notifications_of_sales_of_favourite_products != None):
+            cursor.execute('''UPDATE users SET ready_to_get_notifications_of_sales_of_favourite_products = ? WHERE user_name = ?''', (ready_to_get_notifications_of_sales_of_favourite_products, user_name,))
+        cursor.close()
+        self.connection.commit()
+
     def get(self, user_id):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM users WHERE id = ?", (str(user_id),))
+        row = cursor.fetchone()
+        return row
+
+    def get_pole(self, username, email=None, password=None, rights=None, favourite_products=None, ready_to_get_notifications_of_sales=None, ready_to_get_notifications_of_sales_of_favourite_products=None):
+        cursor = self.connection.cursor()
+        if (email!=None):
+            cursor.execute('''SELECT email FROM users WHERE user_name = ?''', (username, ))
+        if (password!=None):
+            cursor.execute('''SELECT password FROM users WHERE user_name = ?''', (username, ))
+        if (rights!=None):
+            cursor.execute('''SELECT rights FROM users WHERE user_name = ?''', (username, ))
+        if (favourite_products!=None):
+            cursor.execute('''SELECT favourite_products FROM users WHERE user_name = ?''', (username, ))
+        if (ready_to_get_notifications_of_sales!=None):
+            cursor.execute('''SELECT ready_to_get_notifications_of_sales FROM users WHERE user_name = ?''', (username, ))
+        if (ready_to_get_notifications_of_sales_of_favourite_products!=None):
+            cursor.execute('''SELECT ready_to_get_notifications_of_sales_of_favourite_products FROM users WHERE user_name = ?''', (username,))
         row = cursor.fetchone()
         return row
 
@@ -56,9 +90,14 @@ class UsersModel:
         row = cursor.fetchone()
         return row
 
+    def get_user(self, email):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT user_name FROM users WHERE email = ?", (email,))
+        row = cursor.fetchone()
+        return row
+
     def find_email(self, email):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
         row = cursor.fetchone()
-        print(row)
         return (True, row[0]) if row else (False,)

@@ -33,4 +33,11 @@ class ProductModel:
             cursor.execute('''UPDATE products SET sale = ? WHERE name_of_products = ?''', (sale, name_of_products,))
         if (is_sale!=None):
             cursor.execute('''UPDATE products SET is_sale = ? WHERE name_of_products = ?''', (is_sale, name_of_products,))
+        if (date_of_start!=None):
+            cursor.execute('''UPDATE products SET date_of_start = ? WHERE name_of_products = ?''', (date_of_start, name_of_products,))
+        if (date_of_end!=None):
+            cursor.execute('''UPDATE products SET date_of_end = ? WHERE name_of_products = ?''', (date_of_end, name_of_products,))
+        cursor.close()
+        self.connection.commit()
+
 

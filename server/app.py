@@ -1,20 +1,33 @@
-from flask import Flask, render_template, request, sessions
+from flask import Flask, render_template, request, session
 from users_model import UsersModel
 from db import DB
 from category_form import CategoryForm
 from category_model import CategoryModel
 from product_form import ProductForm
 from registration_form import RegistrationForm
+from forgot_form import ForgotForm
+from login_form import LoginForm
+from reset_password_form import ResetPassword
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 import os
 
 
-app = Flask(__name__ )
+app = Flask(__name__ , static_folder="D:\E1\IVR\server\static")
 db = DB()
+
 UsersModel(db.get_connection()).init_table()
 CategoryModel(db.get_connection()).init_table()
 app.config['SECRET_KEY'] = 'nothing'
 app.config['UPLOAD_FOLDER']="D:\\E1\\IVR\\server\\static\\img"
 
+#smtpObj.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
+print("fff")
+
+@app.route("/")
+def index():
+    return render_template("index.html", session=session)
 
 @app.route('/create/<string:user_name>/<string:password>/<string:email>')
 def create_user(user_name, password, email):
@@ -68,7 +81,7 @@ def create_product():
     return render_template("product.html", form = Pf)
 
 @app.route('/register', methods=["GET", "POST"])
-def login():
+def register():
     lf = RegistrationForm()
     args=[]
     um = UsersModel(db.get_connection())
@@ -79,10 +92,119 @@ def login():
         if (um.find_email(lf.email.data)[0]):
             args+=['email_exists']
         if ("exists" not in args and "email_exists" not in args):
+            print(lf.email.data)
             um.insert(lf.login.data, lf.email.data, lf.password.data, "user", '', lf.sales_notif.data, lf.sales_notif_fav_products.data)
             os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data)
             os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data+"\\"+"favourite_templates")
     return render_template('registration.html', form = lf, args=args)
+
+@app.route('/make_admin/<string:username>')
+def up_admin(username):
+    um = UsersModel(db.get_connection())
+    um.update(user_name=username, rights="admin")
+    return "OK"
+
+@app.route('/worker/<string:username>')
+def up_worker(username):
+    um = UsersModel(db.get_connection())
+    um.update(user_name=username, rights="worker")
+    return "OK"
+
+
+@app.route('/forgot_login', methods=["GET", "POST"])
+def forgot_login():
+    fp = ForgotForm()
+    us = UsersModel(db.get_connection())
+    if (request.method=="POST"):
+
+        if (us.find_email(fp.email.data)[0]):
+            fromaddr = "pauchan.mobile@mail.ru"
+            toaddr = fp.email.data
+            msg = MIMEMultipart()
+            msg['From'] = fromaddr
+            msg['To'] = toaddr
+            msg['Subject'] = "Логин на сайте pauchan.pythonanywhere.com"
+            body = "Ваш догин на сайте pauchan.pythonanywhere.com"+us.get_user(fp.email.data)[0]
+            print(body)
+            msg.attach(MIMEText(body, 'plain'))
+            text = msg.as_string()
+            server = smtplib.SMTP('smtp.mail.ru:587')
+            server.starttls()
+            server.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
+            server.sendmail(fromaddr, toaddr, text)
+        return render_template("forgot_login.html", text="email_was_sent")
+    else:
+        return render_template("forgot_login.html", text="write_email", form = fp)
+
+@app.route('/forgot_password', methods=["GET", "POST"])
+def forgot_password():
+    fp = ForgotForm()
+    us = UsersModel(db.get_connection())
+    if (request.method=="POST"):
+        b = False
+        if (fp.email.data.find('@')!=-1):
+            email = fp.email.data
+            username = us.get_user(email)
+            b = True
+        else:
+            username = fp.email.data
+            email = us.get_email(username)
+        if (username!=None and email!=None):
+                if (b):
+                    username=username[0]
+                else:
+                    email = email[0]
+                fromaddr = "pauchan.mobile@mail.ru"
+                toaddr = email
+                msg = MIMEMultipart()
+                msg['From'] = fromaddr
+                msg['To'] = toaddr
+                msg['Subject'] = "Смена пароля на сайте pauchan.pythonanywhere.com"
+                body = "Если вы хотите сменить пароль перейдите по ссылке ниже:\n" + "http://127.0.0.1:5000/reset_password/" +  username
+                print (body)
+                msg.attach(MIMEText(body, 'plain'))
+                text = msg.as_string()
+                server = smtplib.SMTP('smtp.mail.ru:587')
+                server.starttls()
+                server.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
+                server.sendmail(fromaddr, toaddr, text)
+        return render_template("forgot_password.html", text="email_was_sent")
+    else:
+        return render_template("forgot_password.html", text="write_email", form = fp)
+
+@app.route('/reset_password/<string:username>', methods=["GET", "POST"])
+def reset_password(username):
+    print(username)
+    rf = ResetPassword()
+    args = []
+    if request.method=="POST":
+        um = UsersModel(db.get_connection())
+        if (um.exists(username, rf.new_password.data))[0]:
+            args+=["Exists"]
+        else:
+            args+=["OK"]
+            um.update(user_name=username, password=rf.new_password.data)
+    return render_template("reset_password.html", args = args, form = rf)
+
+@app.route("/profile")
+def profile():
+    return "KEK"
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    lf = LoginForm()
+    us = UsersModel(db.get_connection())
+    args = []
+    if (request.method == "POST"):
+        if (us.exists(lf.username.data, lf.password.data))[0]:
+            session['username']=lf.username.data
+            session['rights'] = us.get_pole(username = lf.username.data, rights = "")
+            return profile()
+        else:
+            return render_template("login.html", args=["not exists"], form = lf)
+    return render_template("login.html", form = lf)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
