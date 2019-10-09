@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {% if "name_exists" in args %}
+        <p>Магазин с таким именем уже существует</p><br>
+    {% endif %}
+    {% if "OK" in args %}
+        <p>Магазин успешно создан.</p><br>
+    {% endif %}
+    <label></label>
+    <br>
+    {{ form.name }}
+    <br>
+    <label></label>
+    {{ form.location }}
+    <br>
+    {{ form.files }}
+    <br>
+    {{ form.submit }}
+    </form>
+</body>
+</html>

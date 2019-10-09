@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, FileField, SubmitField, DecimalField
+from wtforms import StringField, SelectField, FileField, SubmitField, DecimalField, MultipleFileField, IntegerField
 
 class ProductForm(FlaskForm):
     name = StringField()
     select = SelectField()
-    file = FileField()
+    file = MultipleFileField()
     submit = SubmitField()
-    price = DecimalField()
+    price = IntegerField()

@@ -4,14 +4,19 @@ from db import DB
 from category_form import CategoryForm
 from category_model import CategoryModel
 from product_form import ProductForm
+from product_model import ProductModel
 from registration_form import RegistrationForm
 from forgot_form import ForgotForm
 from login_form import LoginForm
+from create_shop_form import CreateShopForm
+from shop_model import ShopModel
+from shop_db import DB_SHOP
 from reset_password_form import ResetPassword
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 import os
+import datetime
 
 
 app = Flask(__name__ , static_folder="D:\E1\IVR\server\static")
@@ -19,6 +24,8 @@ db = DB()
 
 UsersModel(db.get_connection()).init_table()
 CategoryModel(db.get_connection()).init_table()
+ProductModel(db.get_connection()).init_table()
+ShopModel(db.get_connection()).init_table()
 app.config['SECRET_KEY'] = 'nothing'
 app.config['UPLOAD_FOLDER']="D:\\E1\\IVR\\server\\static\\img"
 
@@ -29,7 +36,7 @@ print("fff")
 def index():
     return render_template("index.html", session=session)
 
-@app.route('/create/<string:user_name>/<string:password>/<string:email>')
+'''@app.route('/create/<string:user_name>/<string:password>/<string:email>')
 def create_user(user_name, password, email):
     um = UsersModel(db.get_connection())
     if um.find_email(email)[0]:
@@ -48,7 +55,7 @@ def enter_user(user_name, password):
         return "Hello, World!"
     else:
         return "Неправильный логин или пароль"
-
+'''
 @app.route('/create_category', methods=["GET", "POST"])
 def create_category():
     CF = CategoryForm()
@@ -73,12 +80,40 @@ def create_product():
     choises = [i[1] for i in categories]
     Pf = ProductForm()
     Pf.select.choices=choises
+    pm = ProductModel(db.get_connection())
+    args = []
     if request.method=="POST":
-        img = Pf.file.data
-        rash = img.filename.split(".")
-        img.filename = Pf.name.data+"."+rash[1]
-        img.save(os.path.join(app.config["UPLOAD_FOLDER"], img.filename))
-    return render_template("product.html", form = Pf)
+        if (pm.exists(Pf.name.data)[0]):
+            args+=["Exists"]
+
+        else:
+            print("kek")
+            images=""
+            i = 1
+            for img in Pf.file.data:
+                trash = img.filename.split(".")
+                img.filename = Pf.name.data+"_"+str(i)+"."+trash[1]
+                print(img.filename)
+                i+=1
+                images+=img.filename+" "
+                img.save(os.path.join(app.config["UPLOAD_FOLDER"], img.filename))
+            pm.insert(Pf.name.data, Pf.price.data, 0, False, str(datetime.datetime.now()), str(datetime.datetime.now()),
+                      images)
+            args+=["OK"]
+    return render_template("product.html", form = Pf, args = args)
+
+@app.route('/create_shop', methods = ["GET", "POST"])
+def create_shop():
+    csf = CreateShopForm()
+    sm = ShopModel(db.get_connection())
+    args = []
+    if (request.method=="POST"):
+        if (sm.exists(csf.name.data)[0]):
+            args+=["name_exists"]
+        else:
+            os.makedirs(os.getcwd()+"\\shops\\"+csf.name.data)
+            os.makedirs(os.getcwd()+"\\shops\\"+csf.name.data+"\\"+"img")
+    return render_template('new_shop.html', args=args, form = csf)
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -94,6 +129,7 @@ def register():
         if ("exists" not in args and "email_exists" not in args):
             print(lf.email.data)
             um.insert(lf.login.data, lf.email.data, lf.password.data, "user", '', lf.sales_notif.data, lf.sales_notif_fav_products.data)
+
             os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data)
             os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data+"\\"+"favourite_templates")
     return render_template('registration.html', form = lf, args=args)
@@ -118,19 +154,19 @@ def forgot_login():
     if (request.method=="POST"):
 
         if (us.find_email(fp.email.data)[0]):
-            fromaddr = "pauchan.mobile@mail.ru"
+            fromaddr = "pauchan.mobile@gmail.com"
             toaddr = fp.email.data
             msg = MIMEMultipart()
             msg['From'] = fromaddr
             msg['To'] = toaddr
             msg['Subject'] = "Логин на сайте pauchan.pythonanywhere.com"
-            body = "Ваш догин на сайте pauchan.pythonanywhere.com"+us.get_user(fp.email.data)[0]
+            body = "Ваш логин на сайте pauchan.pythonanywhere.com\n"+us.get_user(fp.email.data)[0]
             print(body)
             msg.attach(MIMEText(body, 'plain'))
             text = msg.as_string()
-            server = smtplib.SMTP('smtp.mail.ru:587')
+            server = smtplib.SMTP('smtp.gmail.com:587')
             server.starttls()
-            server.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
+            server.login('pauchan.mobile@gmail.com', 'pzqorfulfgihbxuf')
             server.sendmail(fromaddr, toaddr, text)
         return render_template("forgot_login.html", text="email_was_sent")
     else:
@@ -154,7 +190,7 @@ def forgot_password():
                     username=username[0]
                 else:
                     email = email[0]
-                fromaddr = "pauchan.mobile@mail.ru"
+                fromaddr = "pauchan.mobile@gmail.com"
                 toaddr = email
                 msg = MIMEMultipart()
                 msg['From'] = fromaddr
@@ -164,9 +200,9 @@ def forgot_password():
                 print (body)
                 msg.attach(MIMEText(body, 'plain'))
                 text = msg.as_string()
-                server = smtplib.SMTP('smtp.mail.ru:587')
+                server = smtplib.SMTP('smtp.gmail.com:587')
                 server.starttls()
-                server.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
+                server.login('pauchan.mobile@gmail.com', 'pzqorfulfgihbxuf')
                 server.sendmail(fromaddr, toaddr, text)
         return render_template("forgot_password.html", text="email_was_sent")
     else:

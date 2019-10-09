@@ -11,21 +11,28 @@ class ProductModel:
                              price INTEGER,
                              sale INTEGER,
                              is_sale BOOLEAN,
-                             date_of_start DATE,
-                             date_of_end DATE,
+                             date_of_start TEXT,
+                             date_of_end TEXT,
+                             list_of_photos TEXT
                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, name_of_products, price, sale, is_sale,  date_of_start, date_of_end):
+    def insert(self, name_of_products, price, sale, is_sale,  date_of_start, date_of_end, list_of_photos):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO products
-                        (name_of_products, price, sale, is_sale, date_of_start, date_of_end)
-                        VALUES (?, ?, ?, ?, ?, ?)''', (name_of_products, price, sale, is_sale, date_of_start, date_of_end, ))
+                        (name_of_products, price, sale, is_sale, date_of_start, date_of_end, list_of_photos)
+                        VALUES (?, ?, ?, ?, ?, ?,?)''', (name_of_products, price, sale, is_sale, date_of_start, date_of_end, list_of_photos,))
         cursor.close()
         self.connection.commit()
 
-    def update(self, name_of_products, price = None, sale = None, is_sale = None, date_of_start = None, date_of_end=None):
+    def exists(self, name_of_products):
+        cursor = self.connection.cursor()
+        cursor.execute('''SELECT * FROM products WHERE name_of_products = ?''', (name_of_products,))
+        row = cursor.fetchone()
+        return (True, ) if row else (False,)
+
+    def update(self, name_of_products, price = None, sale = None, is_sale = None, date_of_start = None, date_of_end=None, list_of_photos=None):
         cursor = self.connection.cursor()
         if (price!=None):
             cursor.execute('''UPDATE products SET price = ? WHERE name_of_products = ?''', (price, name_of_products, ))
@@ -37,6 +44,9 @@ class ProductModel:
             cursor.execute('''UPDATE products SET date_of_start = ? WHERE name_of_products = ?''', (date_of_start, name_of_products,))
         if (date_of_end!=None):
             cursor.execute('''UPDATE products SET date_of_end = ? WHERE name_of_products = ?''', (date_of_end, name_of_products,))
+        if (date_of_end!=None):
+            cursor.execute('''UPDATE products SET list_of_photos = ? WHERE name_of_products = ?''',
+                           (list_of_photos, name_of_products,))
         cursor.close()
         self.connection.commit()
 

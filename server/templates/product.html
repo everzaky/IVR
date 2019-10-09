@@ -5,16 +5,26 @@
     <title>Title</title>
 </head>
 <body>
-<form method = "POST" enctype="multipart/form-data">
+{% if "OK" in args %}
+    <p>Продукт успешно создан!</p><br>
+{% endif %}
+<form method = "post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
+    {% if "Exists" in args %}
+        <p>Товар с таким именем уже существует</p><br>
+    {% endif %}
     {{ form.name }}
+    <br>
     <select name = "select">
         {%   for i in form.select.choices %}
             <option>{{ i }}</option>
         {% endfor %}
     </select>
+    <br>
     {{ form.file }}
+    <br>
     {{ form.price }}
+    <br>
     {{ form.submit }}
 </form>
 </body>
