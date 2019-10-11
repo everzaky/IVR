@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect
 from users_model import UsersModel
 from db import DB
 from category_form import CategoryForm
@@ -11,6 +11,7 @@ from login_form import LoginForm
 from create_shop_form import CreateShopForm
 from shop_model import ShopModel
 from shop_db import DB_SHOP
+from add_favourite_product_form import AddFavProduct
 from reset_password_form import ResetPassword
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -34,7 +35,11 @@ print("fff")
 
 @app.route("/")
 def index():
-    return render_template("index.html", session=session)
+
+    cm = CategoryModel(db.get_connection())
+    musor = cm.get_all()
+    categories = [i[1] for i in musor]
+    return render_template("index.html", session=session, categories=categories)
 
 '''@app.route('/create/<string:user_name>/<string:password>/<string:email>')
 def create_user(user_name, password, email):
@@ -87,7 +92,10 @@ def create_product():
             args+=["Exists"]
 
         else:
-            print("kek")
+            products = CM.get_products(Pf.select.data)[0]
+            products+=" "+Pf.name.data
+            print(products)
+            CM.update(name_of_category=Pf.select.data, products=products)
             images=""
             i = 1
             for img in Pf.file.data:
@@ -113,6 +121,14 @@ def create_shop():
         else:
             os.makedirs(os.getcwd()+"\\shops\\"+csf.name.data)
             os.makedirs(os.getcwd()+"\\shops\\"+csf.name.data+"\\"+"img")
+            i=1
+            for img in csf.files.data:
+                trash = img.filename.split(".")
+                img.filename = csf.name.data + "_" + str(i) + "." + trash[1]
+                i += 1
+                img.save(os.path.join(os.getcwd()+"\\shops\\"+csf.name.data+"\\"+"img", img.filename))
+            db_shop = DB_SHOP(csf.name.data)
+            sm.insert(csf.name.data, csf.location.data)
     return render_template('new_shop.html', args=args, form = csf)
 
 @app.route('/register', methods=["GET", "POST"])
@@ -128,7 +144,7 @@ def register():
             args+=['email_exists']
         if ("exists" not in args and "email_exists" not in args):
             print(lf.email.data)
-            um.insert(lf.login.data, lf.email.data, lf.password.data, "user", '', lf.sales_notif.data, lf.sales_notif_fav_products.data)
+            um.insert(lf.login.data, lf.email.data, lf.password.data, "user", ' ', lf.sales_notif.data, lf.sales_notif_fav_products.data)
 
             os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data)
             os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data+"\\"+"favourite_templates")
@@ -222,9 +238,62 @@ def reset_password(username):
             um.update(user_name=username, password=rf.new_password.data)
     return render_template("reset_password.html", args = args, form = rf)
 
+@app.route('/favourite_products')
+def favourite_products():
+    username = session["username"]
+    um = UsersModel(db.get_connection())
+    products = um.get_products(username)[0].split()
+    return render_template("favourite_products.html", products=products)
+
+@app.route('/delete/favourite_products/<string:name>')
+def delete_favourite_product(name):
+    username = session["username"]
+    um = UsersModel(db.get_connection())
+    products = um.get_products(username)[0].split()
+    products.pop(products.index(name))
+    um.update(user_name=session["username"], favourite_products=''.join(products))
+    return redirect('/favourite_products')
+
+@app.route('/add/favourite_products', methods=["GET", "POST"])
+def add_favourite_product():
+    afp = AddFavProduct()
+    args = []
+    um = UsersModel(db.get_connection())
+    cm = CategoryModel(db.get_connection())
+    if (request.method=="POST"):
+        if (cm.exists(afp.select1.data)):
+            products = cm.get_products(afp.select1.data)[0].split()
+            args+=["choose_product"]
+            afp.select2.choices=products
+            return render_template("add_favourite_product.html", form=afp, args=args)
+
+        else:
+            favourite_products = um.get_products(session["username"])[0].split()
+            if (afp.select2.data in favourite_products):
+                args+=["exists"]
+            else:
+                args+=["OK"]
+            favourite_products=''.join(favourite_products+[afp.select2.data])
+            um.update(user_name=session["username"], favourite_products=favourite_products)
+            args += ["choose_category"]
+            musor = cm.get_all()
+            categories = [i[1] for i in musor]
+            print(categories)
+            afp.select1.choices = categories
+            return render_template("add_favourite_product.html", form=afp, args=args)
+
+    else:
+        args+=["choose_category"]
+        musor = cm.get_all()
+        categories = [i[1] for i in musor]
+        print(categories)
+        afp.select1.choices=categories
+        return render_template("add_favourite_product.html", form = afp, args = args)
+
+
 @app.route("/profile")
 def profile():
-    return "KEK"
+    return render_template("profile.html", session=session)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -237,10 +306,13 @@ def login():
             session['rights'] = us.get_pole(username = lf.username.data, rights = "")
             return profile()
         else:
-            return render_template("login.html", args=["not exists"], form = lf)
+            return redirect("/profile")
     return render_template("login.html", form = lf)
 
 
+@app.errorhandler(404)
+def error(e):
+    return "Not Found", 404
 
 if __name__ == '__main__':
     app.run(debug=True)

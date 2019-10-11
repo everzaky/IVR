@@ -96,6 +96,12 @@ class UsersModel:
         row = cursor.fetchone()
         return row
 
+    def get_products(self, username):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT favourite_products FROM users WHERE user_name = ?", (username,))
+        row = cursor.fetchone()
+        return row
+
     def find_email(self, email):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM users WHERE email = ?", (email,))

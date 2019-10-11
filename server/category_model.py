@@ -21,12 +21,12 @@ class CategoryModel:
         cursor.close()
         self.connection.commit()
 
-    def update(self, id, name_of_category = None, products = None):
+    def update(self, id=None, name_of_category = None, products = None):
         cursor =self.connection.cursor()
         if (name_of_category!=None):
             cursor.execute('''UPDATE category SET name_of_category = ? WHERE id = ?''', (name_of_category, id,))
         if (products!=None):
-            cursor.execute('''UPDATE category SET products = ? WHERE id =?''', (products, id,))
+            cursor.execute('''UPDATE category SET products = ? WHERE name_of_category =?''', (products, name_of_category,))
         cursor.close()
         self.connection.commit()
 
