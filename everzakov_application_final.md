@@ -1,6 +1,7 @@
 ﻿### Группа: 10 - МИ - 1
 ### Электронная почта: efimverzakov@gmail.com
 ### VK: vk.com/everzakov
+### Site: http://pauchan.pythonanywhere.com/
 
 
 **[ НАЗВАНИЕ ПРОЕКТА ]**
