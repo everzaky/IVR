@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,  SubmitField, MultipleFileField
+from wtforms import StringField,  SubmitField, FileField
 
 class CreateShopForm(FlaskForm):
     name = StringField()
     location = StringField()
-    files = MultipleFileField()
+    files = FileField()
     submit = SubmitField()

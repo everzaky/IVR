@@ -5,9 +5,12 @@
     <title>Title</title>
 </head>
 <body>
+    <a href="/profile">Личный кабинет</a>
+    <br>
     {%  for product in products %}
         {{ product }}
         <a href="/delete/favourite_products/{{ product }}">Удалить</a>
+        <br>
     {% endfor %}
     <a href="/add/favourite_products">Добавить</a>
 </body>

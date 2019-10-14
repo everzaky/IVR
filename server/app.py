@@ -11,13 +11,20 @@ from login_form import LoginForm
 from create_shop_form import CreateShopForm
 from shop_model import ShopModel
 from shop_db import DB_SHOP
+from shop_product_model import ProductShopModel
 from add_favourite_product_form import AddFavProduct
 from reset_password_form import ResetPassword
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from country_model import CountryModel
+from country_form import CountryForm
+from producer_form import ProducerForm
+from producer_model import ProducerModel
+from search_form import SearchForm
 import smtplib
 import os
 import datetime
+import shutil
 
 
 app = Flask(__name__ , static_folder="D:\E1\IVR\server\static")
@@ -27,19 +34,26 @@ UsersModel(db.get_connection()).init_table()
 CategoryModel(db.get_connection()).init_table()
 ProductModel(db.get_connection()).init_table()
 ShopModel(db.get_connection()).init_table()
+CountryModel(db.get_connection()).init_table()
+ProducerModel(db.get_connection()).init_table()
+
 app.config['SECRET_KEY'] = 'nothing'
 app.config['UPLOAD_FOLDER']="D:\\E1\\IVR\\server\\static\\img"
 
 #smtpObj.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
 print("fff")
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
+    sm = SearchForm()
+    if (request.method=="POST"):
+            return redirect('/search/search/'+sm.value)
+    else:
 
-    cm = CategoryModel(db.get_connection())
-    musor = cm.get_all()
-    categories = [i[1] for i in musor]
-    return render_template("index.html", session=session, categories=categories)
+        cm = CategoryModel(db.get_connection())
+        musor = cm.get_all()
+        categories = [i[1] for i in musor]
+        return render_template("index.html", session=session, categories=categories)
 
 '''@app.route('/create/<string:user_name>/<string:password>/<string:email>')
 def create_user(user_name, password, email):
@@ -76,16 +90,29 @@ def create_category():
     else:
         return render_template('category.html', args=["kek"], form = CF)
 
+@app.route('/work_with_categories')
+def work_with_category():
+    cm = CategoryModel(db.get_connection())
+    categories = cm.get_all()
+    items = [ (i[0], i[1]) for i in categories]
+    return render_template("work_with_categories.html", items = items)
 
-
-@app.route('/create_product', methods=["GET", "POST"])
+@app.route('/create/product', methods=["GET", "POST"])
 def create_product():
     CM = CategoryModel(db.get_connection())
     categories = CM.get_all()
-    choises = [i[1] for i in categories]
+    categories = [i[1] for i in categories]
     Pf = ProductForm()
-    Pf.select.choices=choises
+    Pf.select.choices=categories
     pm = ProductModel(db.get_connection())
+    conm = CountryModel(db.get_connection())
+    countries = conm.get_all()
+    countries =[i[1] for i in countries]
+    Pf.country.choices = countries
+    prm = ProducerModel(db.get_connection())
+    producers = prm.get_all()
+    producers=[i[1] for i in producers]
+    Pf.producer.choices = producers
     args = []
     if request.method=="POST":
         if (pm.exists(Pf.name.data)[0]):
@@ -96,19 +123,124 @@ def create_product():
             products+=" "+Pf.name.data
             print(products)
             CM.update(name_of_category=Pf.select.data, products=products)
+            products = conm.get_products(Pf.country.data)[0]
+            products+=" "+Pf.name.data
+            conm.update(name_of_country=Pf.country.data, products=products)
+            products = prm.get_products(Pf.producer.data)[0]
+            products+=" "+Pf.name.data
+            prm.update(name_of_producer=Pf.producer.data, products=products)
             images=""
             i = 1
             for img in Pf.file.data:
                 trash = img.filename.split(".")
-                img.filename = Pf.name.data+"_"+str(i)+"."+trash[1]
+                img.filename = Pf.name.data+"_"+str(i)+"."+trash[len(trash)-1]
                 print(img.filename)
                 i+=1
                 images+=img.filename+" "
                 img.save(os.path.join(app.config["UPLOAD_FOLDER"], img.filename))
             pm.insert(Pf.name.data, Pf.price.data, 0, False, str(datetime.datetime.now()), str(datetime.datetime.now()),
-                      images)
+                      images, Pf.text.data, Pf.country.data, Pf.producer.data)
             args+=["OK"]
     return render_template("product.html", form = Pf, args = args)
+
+@app.route('/search/<string:filter>/<string:value>')
+def search(filter, value):
+    res = dict()
+
+    if (filter=="category"):
+        cm = CategoryModel(db.get_connection())
+        pm = ProductModel(db.get_connection())
+        ctm = CountryModel(db.get_connection())
+        products = cm.get_products(value)[0].split()
+        items = [pm.get(product) for product in products]
+        items = [[item, item[7].split()[0], ctm.get_flag(item[9])[0]] for item in items]
+        print(items)
+        res["category_result"] = [items, value]
+        print(res["category_result"])
+    return render_template('search_result.html', res = res)
+
+def delete_product(name, ret_url):
+    pm= ProductModel(db.get_connection())
+    shops = os.listdir(os.getcwd()+"\\shops")
+    pm.delete(name)
+    for shop in shops:
+        shop_db = DB_SHOP(shop)
+        shop_product = ProductShopModel(shop_db.get_connection()).init_table()
+        if shop_product.exists(name):
+            shop_product.delete(name)
+    return redirect(ret_url)
+
+def del_product(name):
+    pm = ProductModel(db.get_connection())
+    shops = os.listdir(os.getcwd() + "\\static\\shops")
+    pm.delete(name)
+    for shop in shops:
+        shop_db = DB_SHOP(shop)
+        shop_product = ProductShopModel(shop_db.get_connection()).init_table()
+        if shop_product.exists(name):
+            shop_product.delete(name)
+
+@app.route('/update/category/<int:id>', methods=["GET", "POST"])
+def rename_category(id):
+    cm = CategoryModel(db.get_connection())
+    cf = CategoryForm()
+    args = []
+    if (request.method=="POST"):
+        name_category = cf.NameCategory.data
+        if (cm.exists(name_category)):
+            args+=["Exists"]
+            return render_template('rename_category.html', form = cf, args=args)
+        else:
+            cm.update(id = id, name_of_category=name_category)
+            return redirect('/work_with_categories')
+    else:
+        return render_template('rename_category.html', args=args, form =cf)
+
+@app.route('/delete/category/<string:name_category>')
+def delete_category(name_category):
+    Cm = CategoryModel(db.get_connection())
+    products = Cm.get_products(name_category)[0].split()
+    for product in products:
+        del_product(product)
+    Cm.delete(name_category)
+    return redirect('/work_with_categories')
+
+@app.route('/create/country', methods=["GET", "POST"])
+def create_country():
+    args=[]
+    cm = CountryModel(db.get_connection())
+    cf = CountryForm()
+    if (request.method=="POST"):
+        if (cm.exists(cf.name.data)[0]):
+            args+=["exists"]
+        else:
+            img = cf.flag.data
+            trash = img.filename.split('.')
+            img.filename=cf.name.data+'.'+trash[len(trash)-1]
+            cm.insert(cf.name.data, img.filename, ' ')
+            img.save(os.getcwd()+"\\static\\countries\\"+img.filename)
+            args+=["OK"]
+    return render_template('create_country.html', args = args, form = cf)
+
+@app.route('/create/producer/', methods=["GET", "POST"])
+def create_producer():
+    args = []
+    pm = ProducerModel(db.get_connection())
+    pf = ProducerForm()
+    if (request.method == "POST"):
+        if (pm.exists(pf.name.data)[0]):
+            args += ["exists"]
+        else:
+            pm.insert(pf.name.data," ")
+            args += ["OK"]
+    return render_template('create_producer.html', args=args, form=pf)
+
+def delete_shop(name):
+    sm = ShopModel(db.get_connection())
+    sm.delete(name)
+    shutil.rmtree(os.getcwd()+"\\static\\shops\\"+name)
+
+
 
 @app.route('/create_shop', methods = ["GET", "POST"])
 def create_shop():
@@ -128,6 +260,7 @@ def create_shop():
                 i += 1
                 img.save(os.path.join(os.getcwd()+"\\shops\\"+csf.name.data+"\\"+"img", img.filename))
             db_shop = DB_SHOP(csf.name.data)
+            shop_product = ProductShopModel(db_shop.get_connection()).init_table()
             sm.insert(csf.name.data, csf.location.data)
     return render_template('new_shop.html', args=args, form = csf)
 
@@ -156,10 +289,10 @@ def up_admin(username):
     um.update(user_name=username, rights="admin")
     return "OK"
 
-@app.route('/worker/<string:username>')
-def up_worker(username):
+@app.route('/worker/<string:shop_name>/<string:username>')
+def up_worker(shop_name,username):
     um = UsersModel(db.get_connection())
-    um.update(user_name=username, rights="worker")
+    um.update(user_name=username, rights="worker_"+shop_name)
     return "OK"
 
 
@@ -251,7 +384,7 @@ def delete_favourite_product(name):
     um = UsersModel(db.get_connection())
     products = um.get_products(username)[0].split()
     products.pop(products.index(name))
-    um.update(user_name=session["username"], favourite_products=''.join(products))
+    um.update(user_name=session["username"], favourite_products=' '.join(products))
     return redirect('/favourite_products')
 
 @app.route('/add/favourite_products', methods=["GET", "POST"])
@@ -273,8 +406,8 @@ def add_favourite_product():
                 args+=["exists"]
             else:
                 args+=["OK"]
-            favourite_products=''.join(favourite_products+[afp.select2.data])
-            um.update(user_name=session["username"], favourite_products=favourite_products)
+                favourite_products=' '.join(favourite_products+[afp.select2.data])
+                um.update(user_name=session["username"], favourite_products=favourite_products)
             args += ["choose_category"]
             musor = cm.get_all()
             categories = [i[1] for i in musor]

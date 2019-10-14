@@ -32,18 +32,26 @@ class CategoryModel:
 
     def get_products(self, name_of_product_alley):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT products, id FROM category WHERE name_of_category  = ?", (name_of_product_alley,))
+        cursor.execute("""SELECT products, id FROM category WHERE name_of_category  = ?""", (name_of_product_alley,))
         row = cursor.fetchone()
         return row
 
+
     def exists(self, name_of_category):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM category WHERE name_of_category = ? ", (name_of_category,))
+        cursor.execute("""SELECT * FROM category WHERE name_of_category = ? """, (name_of_category,))
         row = cursor.fetchone()
         return True if row else False
 
     def  get_all(self):
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM category")
+        cursor.execute("""SELECT * FROM category""")
         row = cursor.fetchall()
         return row
+
+    def delete(self, name_of_category):
+        cursor = self.connection.cursor()
+        cursor.execute('''DELETE FROM category WHERE name_of_category = ?''', (name_of_category, ))
+        cursor.close()
+        self.connection.commit()
+

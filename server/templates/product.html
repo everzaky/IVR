@@ -15,17 +15,43 @@
     {% endif %}
     {{ form.name }}
     <br>
+    <p>Введите описание продукта</p>
+    <br>
+    {{ form.text }}
+    <br>
+    <p>Выберите продуктовую категорию</p>
+    <br>
     <select name = "select">
         {%   for i in form.select.choices %}
             <option>{{ i }}</option>
         {% endfor %}
     </select>
     <br>
+    <p>Выберите фотографии продукта</p>
+    <br>
     {{ form.file }}
+    <br>
+    <p>Введите цену продукта</p>
     <br>
     {{ form.price }}
     <br>
+    <p>Выберите страну производства</p>
+    <br>
+    <select name="country">
+        {% for country in form.country.choices %}
+            <option>{{ country }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <p>Выберите производителя</p>
+    <br>
+    <select name = "producer">
+        {% for producer in form.producer.choices %}
+            <option>{{ producer }}</option>
+        {% endfor %}
+    </select>
     {{ form.submit }}
+
 </form>
 </body>
 </html>
