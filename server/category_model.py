@@ -21,21 +21,32 @@ class CategoryModel:
         cursor.close()
         self.connection.commit()
 
-    def update(self, id=None, name_of_category = None, products = None):
+    def update(self, id, name_of_category = None, products = None):
         cursor =self.connection.cursor()
         if (name_of_category!=None):
             cursor.execute('''UPDATE category SET name_of_category = ? WHERE id = ?''', (name_of_category, id,))
         if (products!=None):
-            cursor.execute('''UPDATE category SET products = ? WHERE name_of_category =?''', (products, name_of_category,))
+            cursor.execute('''UPDATE category SET products = ? WHERE id = ?''', (products, id,))
         cursor.close()
         self.connection.commit()
 
-    def get_products(self, name_of_product_alley):
+    def get_products(self, id):
         cursor = self.connection.cursor()
-        cursor.execute("""SELECT products, id FROM category WHERE name_of_category  = ?""", (name_of_product_alley,))
+        cursor.execute("""SELECT products FROM category WHERE id  = ?""", (id,))
         row = cursor.fetchone()
         return row
 
+    def get_id(self, name_of_category):
+        cursor = self.connection.cursor()
+        cursor.execute("""SELECT id FROM category WHERE name_of_category = ?""", (name_of_category, ))
+        row = cursor.fetchone()
+        return row
+
+    def get(self, id):
+        cursor = self.connection.cursor()
+        cursor.execute("""SELECT * FROM category WHERE id = ?""", (id,))
+        row = cursor.fetchone()
+        return row
 
     def exists(self, name_of_category):
         cursor = self.connection.cursor()
@@ -49,9 +60,9 @@ class CategoryModel:
         row = cursor.fetchall()
         return row
 
-    def delete(self, name_of_category):
+    def delete(self, id):
         cursor = self.connection.cursor()
-        cursor.execute('''DELETE FROM category WHERE name_of_category = ?''', (name_of_category, ))
+        cursor.execute('''DELETE FROM category WHERE id = ?''', (id, ))
         cursor.close()
         self.connection.commit()
 

@@ -56,7 +56,11 @@
         </nav>
     </header>
     {% for category in categories %}
-        <a href="/search/category/{{ category }}">{{ category }}</a>
+        <a href="/search/category/{{ category[0] }}">{{ category[1] }}</a>
     {% endfor %}
+    <form method="post">
+        {{ form2.value }}
+        {{ form2.submit }}
+    </form>
 </body>
 </html>

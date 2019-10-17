@@ -5,11 +5,13 @@
     <title>Title</title>
 </head>
 <body>
+    <a href="/profile">Вернутся обратно</a>
+<br>
     {% for item in items %}
         <div>
             <p>{{ item[1] }}</p>
             <a href="/update/category/{{ item[0] }}">Переименовать</a>
-            <a href="/delete/category/{{ item[1] }}">Удалить</a>
+            <a href="/delete/category/{{ item[0] }}">Удалить</a>
         </div>
     {% endfor %}
     <a href="/create_category">Создать новую категорию</a>

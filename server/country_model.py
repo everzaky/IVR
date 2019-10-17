@@ -22,33 +22,48 @@ class CountryModel:
         cursor.close()
         self.connection.commit()
 
+    def get_id(self, name_of_country):
+        cursor = self.connection.cursor()
+        cursor.execute('''SELECT id FROM country WHERE name_of_country = ?''', (name_of_country, ))
+        row = cursor.fetchone()
+        return row
+
+    def get(self, id):
+        cursor = self.connection.cursor()
+        cursor.execute('''SELECT * FROM country WHERE id = ?''', (id, ))
+        row = cursor.fetchone()
+        return row
+
     def exists(self, name_of_country):
         cursor = self.connection.cursor()
         cursor.execute('''SELECT * FROM country WHERE name_of_country = ?''', (name_of_country, ))
         row = cursor.fetchone()
         return (True,  ) if row else (False, )
 
-    def delete(self, name_of_country):
+    def delete(self, id):
         cursor = self.connection.cursor()
-        cursor.execute('''DELETE FROM country WHERE name_of_country = ?''', (name_of_country, ))
+        cursor.execute('''DELETE FROM country WHERE id = ?''', (id, ))
         cursor.close()
         self.connection.commit()
 
-    def update(self, name_of_country, products):
+    def update(self, id, name_of_country = None, products = None):
         cursor = self.connection.cursor()
-        cursor.execute('''UPDATE country SET products = ? WHERE name_of_country = ?''', (name_of_country, products))
+        if (name_of_country!=None):
+            cursor.execute('''UPDATE country SET name_of_country = ? WHERE id = ?''', (name_of_country, id,))
+        if (products!=None):
+            cursor.execute('''UPDATE country SET products = ? WHERE id = ?''', (products, id,))
         cursor.close()
         self.connection.commit()
 
-    def get_products(self, name_of_country):
+    def get_products(self, id):
         cursor = self.connection.cursor()
-        cursor.execute('''SELECT products FROM country WHERE name_of_country = ? ''', (name_of_country,))
+        cursor.execute('''SELECT products FROM country WHERE id = ? ''', (id,))
         row = cursor.fetchone()
         return row
 
-    def get_flag(self, name_of_country):
+    def get_flag(self, id):
         cursor = self.connection.cursor()
-        cursor.execute('''SELECT flag FROM country WHERE  name_of_country = ?''', (name_of_country,))
+        cursor.execute('''SELECT flag FROM country WHERE id = ?''', (id,))
         row = cursor.fetchone()
         return row
 
