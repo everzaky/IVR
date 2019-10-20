@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="{{ url }}">Вернуться обратно</a>
+    <br>
+    {% if "OK"  in args %}
+        <p>Товар успешно добавлен в {{ to_where }}</p>
+    {% endif %}
+    {% if "exists" in args %}
+        <p>Данный товар уже есть в шаблоне: {{ to_where }}</p>
+    {% endif %}
+    <form method = "post">
+        {% if "choose_category" in args %}
+            <p>Выберите категорию:</p>
+            <br>
+            <select name = "select1">
+                {% for category in form.select1.choices %}
+                    <option>{{ category }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        {% if "choose_product" in args %}
+            <p>Выберите продукт:</p>
+            <br>
+            <select name = "select2">
+                {% for product in form.select2.choices %}
+                    <option>{{ product }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        {{ form.submit }}
+        </form>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="{{ url_for('static', filename='point.css') }}" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+</head>
+<body>
+    <a href="/show/shop">Вернуться обратно!</a>
+    <br>
+    <p>Название товара: {{ name }}</p>
+    <br>
+    <p>Текущее количество товара: {{ number }}</p>
+    <br>
+    <form method="post" name="kek">
+        <p>Введите новое количество товара</p>
+        <br>
+        {{ form.number }}
+        {{ form.output(id = "otherfield") }}
+        {{ form.submit(class="button") }}
+    </form>
+    {% for image in images %}
+        <div class="clickable" style="background-image: url('/static/shops/{{ name_of_shop }}/img/{{ image[0] }}')">
+            {% for point in image[1] %}
+                <div class="pointer" style="left: {{ point[1] }}; top:{{ point[0] }}"></div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+ <script>
+
+var $clickable = $('.clickable');
+
+var $pointer = $('.pointer');
+
+$clickable.dblclick( function(e) {
+   e.stopPropagation();
+   $(this).append('<div class="pointer" />');
+  var $pointerr = $(this).find('.pointer:last-child');
+  $pointerr.css({
+  	top: event.pageY- $(this).offset().top,
+    left: event.pageX  - $(this).offset().left
+  });
+  $pointer = $('.pointer');
+  $pointer.click(function(){
+  $(this).remove();
+    });
+});
+
+$pointer.click(function () {
+   $(this).remove();
+});
+
+var $url = '{{ url }}';
+
+var $button = $('.button');
+var $output="";
+$("form").submit(function () {
+      $('.clickable').each(function (i, elem) {
+         var $pr = $('.clickable:eq('+i+' ) .pointer');
+        $output+=i+":";
+        $pr.each(function(index, element){
+            var $prr = $('.clickable:eq('+i+' ) .pointer:eq('+index+')');
+          $output+=$prr.css("top")+"|"+$prr.css("left")+" ";
+        });
+
+          $output+='_';
+      });
+
+     $("#otherfield").val($output);
+  });
+
+
+
+ </script>
+</body>
+</html>
