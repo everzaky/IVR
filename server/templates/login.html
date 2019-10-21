@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="post">
+        {% if 'not_exists' in args %}
+            <p>Неправильный пароль или логин</p><br>
+        {%  endif %}
+        <label>Логин/email:</label><br>
+        {{ form.username }}
+        <br>
+        <label>Пароль:</label>
+        <br>
+        {{ form.password }}
+        <br>
+        {{ form.submit }}
+        <br>
+        <a onclick="location.href='/forgot_password'">Забыли пароль?</a>
+        <a onclick="location.href='/forgot_login'">Забыли логин?</a>
+        <a onclick="location.href='/register'">Зарегестироваться</a>
+    </form>
+</body>
+</html>

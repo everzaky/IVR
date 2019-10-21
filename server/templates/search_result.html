@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename="search.css") }}">
+</head>
+<body>
+    {% if "category_result" in res.keys() %}
+        <p>Товары продуктовой категории {{ res["category_result"][1] }}:</p>
+        {% if res["category_result"][2] %}
+            {% for item in res["category_result"][0] %}
+                <div>
+                    <p>{{ item[1] }}</p>
+                    <br>
+                    <img src="/static/img/{{ item[5] }}" style="height: 50px; width: 50px">
+                    <br>
+                    <p>Описание товара: {{ item[6] }}</p>
+                    <br>
+                    <p>Изготовитель: {{ item[8] }}</p>
+                    <br>
+                    <p>Страна производства: {{ item[7] }}</p>
+                    <img src="/static/countries/{{ item[9] }}" style="height: 50px; width: 100px">
+                    <a href="/delete/product/{{ item[0]}}/{{ url }}">Удалить товар</a>
+                    <div class="table-hover">
+                        <a>Добавить в..</a>
+                        <div class="table">
+                            <a>lol</a>
+                            <a>kek</a>
+                        </div>
+                    </div>
+
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if not res["category_result"][2] %}
+            <p>Товаров данной категории нет</p>
+        {% endif %}
+    {% endif %}
+    {% if "country_result" in res.keys() %}
+        <p>Товары страны производителя {{ res["country_result"][1] }}:</p>
+        <img src="/static/countries/{{ res["country_result"][3] }}" style="height: 50px; width: 100px">
+        {% if res["country_result"][2] %}
+            {% for item in res["country_result"][0] %}
+                <div>
+                    <p>{{ item[1] }}</p>
+                    <br>
+                    <img src="/static/img/{{ item[5] }}" style="height: 50px; width: 50px">
+                    <br>
+                    <p>Описание товара: {{ item[6] }}</p>
+                    <br>
+                    <p>Товарная категория товара: {{ item[7] }}</p>
+                    <br>
+                    <p>Изготовитель: {{ item[8] }}</p>
+                    <br>
+                    <a href="/delete/product/{{ item[0]}}/{{ url }}">Удалить товар</a>
+                    <div class="table-hover">
+                        <a>Добавить в..</a>
+                        <div class="table">
+                            <a>lol</a>
+                            <a>kek</a>
+                        </div>
+                    </div>
+
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if not res["country_result"][2] %}
+            <p>Товаров данной страны производста нет</p>
+        {% endif %}
+    {% endif %}
+    {% if "producer_result" in res.keys() %}
+        <p>Товары продуктовой категории {{ res["producer_result"][1] }}:</p>
+        {% if res["producer_result"][2] %}
+            {% for item in res["producer_result"][0] %}
+                <div>
+                    <p>{{ item[1] }}</p>
+                    <br>
+                    <img src="/static/img/{{ item[5] }}" style="height: 50px; width: 50px">
+                    <br>
+                    <p>Товарная: {{ item[8] }}</p>
+                    <br>
+                    <p>Описание товара: {{ item[6] }}</p>
+                    <br>
+                    <p>Страна производства: {{ item[7] }}</p>
+                    <img src="/static/countries/{{ item[9] }}" style="height: 50px; width: 100px">
+                    <a href="/delete/product/{{ item[0]}}/{{ url }}">Удалить товар</a>
+                    <div class="table-hover">
+                        <a>Добавить в..</a>
+                        <div class="table">
+                            <a>lol</a>
+                            <a>kek</a>
+                        </div>
+                    </div>
+
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if not res["producer_result"][2] %}
+            <p>Товаров данного изготовителя нет</p>
+        {% endif %}
+    {% endif %}
+    {% if "search_result" in res.keys() %}
+        {% if res["search_result"][1] %}
+            {% if res["search_result"][0][0][1] %}
+                <p>Возможно, вы искали следующие товарные категории:
+                {% for category in res["search_result"][0][0][0] %}
+                    <a href="/search/category/{{ category[0] }}">{{ category[1] }}</a>
+                {% endfor %}
+                </p>
+                <br>
+            {% endif %}
+            {% if res["search_result"][0][1][1] %}
+                <p>Возможно, вы искали следующих производителей:
+                    {% for producer in res["search_result"][0][1][0] %}
+                        <a href="/search/producer/{{ producer[0] }}">{{ producer[1] }}</a>
+                    {% endfor %}
+                </p>
+                <br>
+            {% endif %}
+            {% if res["search_result"][0][2][1] %}
+                <p>Возможно, вы искали следующие страны производства:
+                    {% for country in res["search_result"][0][2][0] %}
+                        <a href="/search/country/{{ country[0] }}">{{ country[1] }}</a>
+                    {% endfor %}
+                </p>
+                <br>
+            {% endif %}
+            {% if res["search_result"][0][3][1] %}
+                <p>Возможно, вы искали следующие товары:</p>
+                {%  for product in res["search_result"][0][3][0] %}
+                    <div>
+                        <p>{{ product[1] }}</p>
+                        <br>
+                        <img src="/static/img/{{ product[5] }}" style="width: 50px; height: 50px">
+                        <br>
+                        <p>Товарная категория: {{ product[10] }}</p>
+                        <br>
+                        <p>Описание продукта: {{ product[6] }}</p>
+                        <br>
+                        <p>Страна производства: {{ product[7] }}</p>
+                        <br>
+                        <img src="/static/countries/{{ product[8] }}" style="width: 150px; height: 50px">
+                        <br>
+                        <p>Компания-изготовитель: {{ product[9] }}</p>
+                        <br>
+                        <a href="/delete/product/{{ product[0]}}/{{ url }}">Удалить товар</a>
+                        <div class="table-hover">
+                        <a>Добавить в..</a>
+                        <div class="table">
+                            <a>lol</a>
+                            <a>kek</a>
+                        </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {%  endif %}
+        {% endif %}
+        {% if not res["search_result"][1] %}
+            <p>Ничего не найдено</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>

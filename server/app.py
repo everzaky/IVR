@@ -376,21 +376,20 @@ def pos_product(id_pr, id_sh):
     db_shop = DB_SHOP(name_of_shop)
     ProductShopModel(db.get_connection()).init_table()
     shop_product_model = ProductShopModel(db_shop.get_connection())
-    id_product = shop_product_model.get_id(name_of_product)[0]
-    if (request.method == "POST"):
-        if (type(psf.number.data).__name__!='NoneType'):
-            shop_product_model.update(id=int(id_product), number_of_product=int(psf.number.data))
-        shop_product_model.update(id = id_product, location=psf.output.data)
-        print(psf.output.data)
+    id_product = shop_product_model.get_id(name_of_product)
     if (type(id_product).__name__=='NoneType'):
         shop_product_model.insert(name_of_product, location='', number_of_product=0)
         shop_product_model = ProductShopModel(db_shop.get_connection())
+    if (request.method == "POST"):
+        id_product = shop_product_model.get_id(name_of_product)[0]
+        if (type(psf.number.data).__name__!='NoneType'):
+            shop_product_model.update(id=int(id_product), number_of_product=int(psf.number.data))
+        shop_product_model.update(id = id_product, location=psf.output.data)
     id_product = shop_product_model.get_id(name_of_product)[0]
     product=shop_product_model.get(id_product)
     product_number = product[3]
     locations = product[2]
-    print(locations)
-    if (type(locations).__name__!='NoneType'):
+    if (type(locations).__name__!='NoneType' and locations!=''):
         s=locations
         s=s[0:len(s)-1]
         pos_products = [[int(i.split(':')[0]), [list(map(str, j.split("|"))) for j in i.split(':')[1].split()]] for i in

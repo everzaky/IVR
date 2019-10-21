@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="/profile">Вернутся обратно</a>
+    <br>
+    {% if "exists"  in args%}
+        <p>Данная страна уже существует</p>
+        <br>
+    {% endif %}
+    {% if "OK" in args %}
+        <p>Страна успешно создана!</p>
+        <br>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <p>Введите название страны</p>
+        <br>
+        {{ form.name }}
+        <br>
+        <p>Загрузите флаг страны</p>
+        <br>
+        {{ form.flag }}
+        <br>
+        {{ form.submit }}
+    </form>
+</body>
+</html>

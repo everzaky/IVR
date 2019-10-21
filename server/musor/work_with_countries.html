@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href = '/profile'>Вернуться обратно</a>
+    <br>
+    {% for country in countries %}
+        <p>{{ country[0] }}</p>
+        <a href="/update/country/{{ country[1] }}">Переименовать</a>
+        <a href="/delete/country/{{ country[1] }}">Удалить</a>
+    {%  endfor %}
+    <a href="/create/country">Создайте страну!</a>
+</body>
+</html>

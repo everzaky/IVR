@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="/login">Авторизоваться</a>
+    <br>
+    <form method = "post">
+    {{ form.hidden_tag() }}
+        {% if "exists" in args %}
+            <p>Данный логин занят</p>
+            <br>
+        {% endif %}
+        {% if "exists" not in args and "email_exists" not in args  and "post" in args%}
+            <p>Пользователь создан</p>
+        {% endif %}
+        <p>Логин:</p>
+    {{ form.login(class = "kek") }}
+        <p>Пароль:</p>
+    {{ form.password }}
+    {% if "email_exists"  in args %}
+        <p>Данная почта уже используется </p>
+    {% endif %}
+    <p>Email: </p>
+    {{ form.email }}
+    <p>Готовы ли вы получать уведомление о скидках на товары?</p>
+    {{ form.sales_notif }}
+    <p>Готовы ли вы получать уведомления о скидках на любимые товары?</p>
+    {{ form.sales_notif_fav_products }}
+    <br>
+    {{ form.submit }}
+    </form>
+</body>
+</html>
