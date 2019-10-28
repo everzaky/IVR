@@ -14,23 +14,37 @@
                 <div>
                     <p>{{ item[1] }}</p>
                     <br>
-                    <img src="/static/img/{{ item[5] }}" style="height: 50px; width: 50px">
+                    <img src="/static/img/{{ item[6] }}" style="height: 50px; width: 50px">
                     <br>
-                    <p>Описание товара: {{ item[6] }}</p>
+
+                    <p>Описание товара: {{ item[7] }}</p>
                     <br>
-                    <p>Изготовитель: {{ item[8] }}</p>
+                    <p>Изготовитель: {{ item[9] }}</p>
                     <br>
-                    <p>Страна производства: {{ item[7] }}</p>
-                    <img src="/static/countries/{{ item[9] }}" style="height: 50px; width: 100px">
+                    <p> Цена в интернет-магазине:
+                    {% if date > item[4] and date < item[5] %}
+                        <span style="text-decoration: line-through">{{ item[2] }}</span> <span>{{ item[3] }}</span>
+                    {% endif %}
+                    {% if not(date > item[4] and date < item[5]) %}
+                        <span>{{ item[2] }}</span>
+                    {% endif %}
+                    </p>
+                    <br>
+                    <p>Страна производства: {{ item[8] }}</p>
+                    <img src="/static/countries/{{ item[10] }}" style="height: 50px; width: 100px">
                     <a href="/delete/product/{{ item[0]}}/{{ url }}">Удалить товар</a>
                     <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
-                            <a>lol</a>
-                            <a>kek</a>
+                            <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
+                        </div>
+                        <a>Расположить товар в:</a>
+                        <div class="table">
+                            {% for shop in shops %}
+                                <a href="/pos/product/{{ item[0] }}/shop/{{ shop[1] }}/{{ url }}">{{shop[0]}}</a>
+                            {% endfor %}
                         </div>
                     </div>
-
                 </div>
             {% endfor %}
         {% endif %}
@@ -46,20 +60,28 @@
                 <div>
                     <p>{{ item[1] }}</p>
                     <br>
-                    <img src="/static/img/{{ item[5] }}" style="height: 50px; width: 50px">
+                    <img src="/static/img/{{ item[6] }}" style="height: 50px; width: 50px">
                     <br>
-                    <p>Описание товара: {{ item[6] }}</p>
+                    <p>Товарная категория товара: {{ item[8] }}</p>
                     <br>
-                    <p>Товарная категория товара: {{ item[7] }}</p>
+                    <p>Описание товара: {{ item[7] }}</p>
                     <br>
-                    <p>Изготовитель: {{ item[8] }}</p>
+                    <p>Цена в интернет-магазине:
+                        {% if date>item[4] and date<item[5] %}
+                            <span style="text-decoration: line-through">{{ item[2] }}</span> <span>{{ item[3] }}</span>
+                        {% endif %}
+                        {% if not(date>item[4] and date<item[5]) %}
+                            <span>{{ item[2] }}</span>
+                        {% endif %}
+                    </p>
+                    <br>
+                    <p>Изготовитель: {{ item[9] }}</p>
                     <br>
                     <a href="/delete/product/{{ item[0]}}/{{ url }}">Удалить товар</a>
                     <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
-                            <a>lol</a>
-                            <a>kek</a>
+                            <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
                         </div>
                     </div>
 
@@ -77,20 +99,27 @@
                 <div>
                     <p>{{ item[1] }}</p>
                     <br>
-                    <img src="/static/img/{{ item[5] }}" style="height: 50px; width: 50px">
+                    <img src="/static/img/{{ item[6] }}" style="height: 50px; width: 50px">
                     <br>
-                    <p>Товарная: {{ item[8] }}</p>
+                    <p>Товарная категория: {{ item[9] }}</p>
                     <br>
-                    <p>Описание товара: {{ item[6] }}</p>
+                    <p>Описание товара: {{ item[7] }}</p>
                     <br>
-                    <p>Страна производства: {{ item[7] }}</p>
-                    <img src="/static/countries/{{ item[9] }}" style="height: 50px; width: 100px">
+                    <p> Цена в интернет-магазине:
+                    {% if date > item[4] and date < item[5] %}
+                        <span style="text-decoration: line-through">{{ item[2] }}</span> <span>{{ item[3] }}</span>
+                    {% endif %}
+                    {% if not(date > item[4] and date < item[5]) %}
+                        <span>{{ item[2] }}</span>
+                    {% endif %}
+                    </p>
+                    <p>Страна производства: {{ item[8] }}</p>
+                    <img src="/static/countries/{{ item[10] }}" style="height: 50px; width: 100px">
                     <a href="/delete/product/{{ item[0]}}/{{ url }}">Удалить товар</a>
                     <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
-                            <a>lol</a>
-                            <a>kek</a>
+                            <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
                         </div>
                     </div>
 
@@ -149,8 +178,7 @@
                         <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
-                            <a>lol</a>
-                            <a>kek</a>
+                            <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
                         </div>
                         </div>
                     </div>

@@ -8,22 +8,25 @@
 
 </head>
 <body>
-    <a href="/show/shop">Вернуться обратно!</a>
+    <a href="{{ ret_url }}">Вернуться обратно!</a>
     <br>
     <p>Название товара: {{ name }}</p>
     <br>
     <p>Текущее количество товара: {{ number }}</p>
     <br>
+    <p>Цена в магазине (без скидок): {{ price }}</p>
+    <br>
     <form method="post" name="kek">
         <p>Введите новое количество товара</p>
         <br>
         {{ form.number }}
+        {{ form.price }}
         {{ form.output(id = "otherfield") }}
         {{ form.submit(class="button") }}
     </form>
     {% for image in images %}
-        <div class="clickable" style="background-image: url('/static/shops/{{ name_of_shop }}/img/{{ image[0] }}')">
-            {% for point in image[1] %}
+        <div class="clickable" style="background-image: url('/static/shops/{{ name_of_shop }}/img/{{ image[0] }}'); width: {{ image[1]}}px; height: {{ image[2]}}px " >
+            {% for point in image[3] %}
                 <div class="pointer" style="left: {{ point[1] }}; top:{{ point[0] }}"></div>
             {% endfor %}
         </div>

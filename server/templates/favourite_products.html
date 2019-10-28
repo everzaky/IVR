@@ -8,10 +8,10 @@
     <a href="/profile">Личный кабинет</a>
     <br>
     {%  for product in products %}
-        {{ product }}
-        <a href="/delete/favourite_products/{{ product }}">Удалить</a>
+    <p>{{ product[0] }}</p>
+        <a href="/delete/favourite_products/{{product[1]}}">Удалить</a>
         <br>
     {% endfor %}
-    <a href="/add/favourite_products">Добавить</a>
+    <a href="/add/fav/products">Добавить</a>
 </body>
 </html>

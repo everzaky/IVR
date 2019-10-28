@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,  SubmitField, SelectField, FileField, PasswordField, MultipleFileField, IntegerField, TextAreaField, BooleanField
+from wtforms import StringField,  SubmitField, SelectField, FileField, PasswordField, MultipleFileField, IntegerField, TextAreaField, BooleanField, DecimalField, FloatField
 from wtforms.validators import  DataRequired
 
 class ChooseProduct(FlaskForm):
@@ -49,7 +49,7 @@ class ProductForm(FlaskForm):
     select = SelectField()
     file = MultipleFileField()
     submit = SubmitField()
-    price = IntegerField()
+    price = FloatField()
     text = TextAreaField()
     producer = SelectField()
     country = SelectField()
@@ -74,3 +74,4 @@ class PosProduct(FlaskForm):
     number=IntegerField()
     output = StringField()
     submit = SubmitField()
+    price = FloatField()

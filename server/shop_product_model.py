@@ -8,16 +8,20 @@ class ProductShopModel:
                                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                                              name_of_product TEXT,
                                              location TEXT,
-                                             number_of_product INTEGER 
+                                             number_of_product INTEGER,
+                                             price REAL ,
+                                             price_sale REAL ,
+                                             date_of_start TEXT,
+                                             date_of_end TEXT
                                              )''')
         cursor.close()
         self.connection.commit()
 
-    def insert(self, name_of_product, location, number_of_product):
+    def insert(self, name_of_product, location, number_of_product, price, price_sale, date_of_start, date_of_end):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO shop
-                        (name_of_product, location, number_of_product)
-                        VALUES (?, ?, ?)''', (name_of_product, location, number_of_product, ))
+                        (name_of_product, location, number_of_product, price, price_sale, date_of_start, date_of_end)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)''', (name_of_product, location, number_of_product, price, price_sale, date_of_start, date_of_end, ))
         cursor.close()
         self.connection.commit()
 
@@ -39,7 +43,7 @@ class ProductShopModel:
         row = cursor.fetchone()
         return row
 
-    def update(self, id,  name_of_product = None,  number_of_product = None, location = None):
+    def update(self, id,  name_of_product = None,  number_of_product = None, location = None, price = None, price_sale = None, date_of_start = None, date_of_end = None):
         cursor = self.connection.cursor()
         if (name_of_product!=None):
             cursor.execute("""UPDATE shop SET name_of_product = ? WHERE id = ?""", (name_of_product, id, ))
@@ -47,6 +51,14 @@ class ProductShopModel:
             cursor.execute('''UPDATE shop SET number_of_product = ? WHERE id = ?''', (number_of_product, id, ))
         if (location!=None):
             cursor.execute('''UPDATE shop SET location = ? WHERE id = ?''', (location, id, ))
+        if (price != None):
+            cursor.execute('''UPDATE shop SET price = ? WHERE id = ?''', (price, id, ))
+        if (price_sale != None):
+            cursor.execute('''UPDATE shop SET price_sale = ? WHERE id = ?''', (price_sale, id, ))
+        if (date_of_start!=None):
+            cursor.execute('''UPDATE shop SET date_of_start = ? WHERE id = ?''', (date_of_start, id, ))
+        if (date_of_end!=None):
+            cursor.execute('''UPDATE shop SET date_of_start = ? WHERE id = ?''', (date_of_end, id, ))
         cursor.close()
         self.connection.commit()
 

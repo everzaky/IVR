@@ -8,10 +8,20 @@
     <a href="{{ url }}">Вернуться обратно</a>
     <br>
     {% if "OK"  in args %}
-        <p>Товар успешно добавлен в {{ to_where }}</p>
+        {% if "favproducts" in args %}
+            <p>Товар успешно добавлен в любимые товары</p>
+        {% endif %}
+        {% if "shablon" in args %}
+            <p>Товар успешно добавлен в шаблон: {{ name_shablon }}</p>
+        {% endif %}
     {% endif %}
     {% if "exists" in args %}
-        <p>Данный товар уже есть в шаблоне: {{ to_where }}</p>
+        {% if "favproducts" in args %}
+            <p>Товар уже есть в любимых товарах</p>
+        {% endif %}
+        {% if "shablon" in args %}
+            <p>Товар уже есть в шаблоне: {{ name_shablon }}</p>
+        {% endif %}
     {% endif %}
     <form method = "post">
         {% if "choose_category" in args %}

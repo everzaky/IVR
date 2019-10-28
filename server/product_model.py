@@ -8,9 +8,8 @@ class ProductModel:
         cursor.execute('''CREATE TABLE IF NOT EXISTS products
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
                              name_of_products VARCHAR(50),
-                             price INTEGER,
-                             sale INTEGER,
-                             is_sale BOOLEAN,
+                             price REAL ,
+                             sale REAL ,
                              date_of_start TEXT,
                              date_of_end TEXT,
                              list_of_photos TEXT,
@@ -22,11 +21,11 @@ class ProductModel:
         cursor.close()
         self.connection.commit()
 
-    def insert(self, name_of_products, price, sale, is_sale,  date_of_start, date_of_end, list_of_photos, description, country, producer, category):
+    def insert(self, name_of_products, price, sale,  date_of_start, date_of_end, list_of_photos, description, country, producer, category):
         cursor = self.connection.cursor()
         cursor.execute('''INSERT INTO products
-                        (name_of_products, price, sale, is_sale, date_of_start, date_of_end, list_of_photos, description, country, producer, category)
-                        VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?)''', (name_of_products, price, sale, is_sale, date_of_start, date_of_end, list_of_photos,description,country,producer, category, ))
+                        (name_of_products, price, sale,  date_of_start, date_of_end, list_of_photos, description, country, producer, category)
+                        VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?)''', (name_of_products, price, sale, date_of_start, date_of_end, list_of_photos,description,country,producer, category, ))
         cursor.close()
         self.connection.commit()
 
@@ -36,7 +35,7 @@ class ProductModel:
         row = cursor.fetchone()
         return (True, ) if row else (False,)
 
-    def update(self,   id , name_of_products = None,  price = None, sale = None, is_sale = None, date_of_start = None, date_of_end=None, list_of_photos=None, description = None, country=None, producer=None, category = None):
+    def update(self,   id , name_of_products = None,  price = None, sale = None,  date_of_start = None, date_of_end=None, list_of_photos=None, description = None, country=None, producer=None, category = None):
         cursor = self.connection.cursor()
         if (name_of_products!=None):
             cursor.execute('''UPDATE products SET name_of_products WHERE  id = ?''', (name_of_products, id, ))
@@ -44,8 +43,6 @@ class ProductModel:
             cursor.execute('''UPDATE products SET price = ? WHERE id = ?''', (price, id, ))
         if (sale!=None):
             cursor.execute('''UPDATE products SET sale = ? WHERE id = ?''', (sale, id,))
-        if (is_sale!=None):
-            cursor.execute('''UPDATE products SET is_sale = ? WHERE id = ?''', (is_sale, id,))
         if (date_of_start!=None):
             cursor.execute('''UPDATE products SET date_of_start = ? WHERE id = ?''', (date_of_start, id,))
         if (date_of_end!=None):
