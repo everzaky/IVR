@@ -13,7 +13,6 @@ from producer_model import ProducerModel
 from forms import *
 from PIL import Image
 from  decimal import Decimal
-
 import smtplib
 import os
 import datetime
@@ -29,7 +28,7 @@ if (platform.system()=="Windows"):
 else:
     slashes="/"
 app = Flask(__name__ , static_folder=os.getcwd()+slashes+"static")
-db = DB()
+db = DB(slashes)
 
 UsersModel(db.get_connection()).init_table()
 
@@ -40,11 +39,10 @@ CountryModel(db.get_connection()).init_table()
 ProducerModel(db.get_connection()).init_table()
 
 app.config['SECRET_KEY'] = 'nothing'
-app.config['UPLOAD_FOLDER']=os.getcwd()+slashes+"static"+slashes
+app.config['UPLOAD_FOLDER']=os.getcwd()+slashes+"static"+slashes+"img"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 #smtpObj.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
-print("fff")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -55,7 +53,6 @@ def index():
         cm = CategoryModel(db.get_connection())
         categories = cm.get_all()
         return render_template("index.html", session=session, categories=categories, form2 = sm)
-
 
 @app.route('/create_category', methods=["GET", "POST"])
 def create_category():
@@ -100,12 +97,13 @@ def del_product(id):
     pm = ProductModel(db.get_connection())
     shops = os.listdir(os.getcwd() + slashes + "static"+slashes + "shops")
     product = pm.get(id)
-    images = product[7].split()
+    images = product[6].split()
     for image in images:
-        os.remove(os.getcwd() + slashes + "static" + slashes + "img" + image)
+        print(image)
+        os.remove(os.getcwd() + slashes + "static" + slashes + "img" + slashes+ image)
     pm.delete(id)
     for shop in shops:
-        shop_db = DB_SHOP(shop)
+        shop_db = DB_SHOP(shop, slashes)
         shop_product = ProductShopModel(shop_db.get_connection()).init_table()
         if shop_product.exists(id):
             shop_product.delete(id)
@@ -144,7 +142,6 @@ def update_country(id):
     if (request.method=="POST"):
         if (len(rcf.name.data)!=None):
             ctm.update(id, name_of_country=rcf.name.data)
-        print(rcf.flag.data)
         return "kek"
     else:
         return render_template('recreate_country.html', form = rcf, args = args)
@@ -166,7 +163,6 @@ def show_countries():
     countries.sort()
     return render_template('work_with_countries.html', countries=countries)
 
-
 @app.route('/create/producer/', methods=["GET", "POST"])
 def create_producer():
     args = []
@@ -179,7 +175,6 @@ def create_producer():
             pm.insert(pf.name.data," ")
             args += ["OK"]
     return render_template('create_producer.html', args=args, form=pf)
-
 
 @app.route('/create/product', methods=["GET", "POST"])
 def create_product():
@@ -236,15 +231,16 @@ def create_product():
 @app.route('/delete/product/<int:id>/<string:ret_url>')
 def delete_product(id, ret_url):
     pm= ProductModel(db.get_connection())
-    shops = os.listdir(os.getcwd()+"\\static\\shops")
+    shops = os.listdir(os.getcwd()+slashes+"static"+slashes+"shops")
     product = pm.get(id)
     name_of_product = product[1]
-    images = product[7].split()
+    images = product[6].split()
     for image in images:
-        os.remove(os.getcwd()+"\\static\\img\\"+image)
+        print(image)
+        os.remove(os.getcwd()+slashes+"static"+slashes+"img"+slashes+image)
 
     for shop in shops:
-        shop_db = DB_SHOP(shop)
+        shop_db = DB_SHOP(shop, slashes)
         ProductShopModel(shop_db.get_connection()).init_table()
         shop_product=ProductShopModel(shop_db.get_connection())
         if type(shop_product.get_id(name_of_product)).__name__!="NoneType":
@@ -260,6 +256,13 @@ def search(filter, value):
     shops = sm.get_all()
     shops = [[i[1], i[0]] for i in  shops]
     shops.sort()
+    list_of_shablons=[]
+    shablons_true=False
+    if "username" in session.keys():
+        shablons_true=True
+        list_of_shablons = os.listdir(os.getcwd()+slashes+"users"+slashes+session['username'] +slashes+"favourite_templates")
+        list_of_shablons=[i[0:len(i)-4] for i in list_of_shablons]
+
     if (filter=="category"):
         cm = CategoryModel(db.get_connection())
         name_of_category = cm.get(int(value))[1]
@@ -274,6 +277,15 @@ def search(filter, value):
             if (item!=None):
                 product+=i+" "
                 item = [item[0], item[1], item[2], item[3], item[4], item[5],  item[6].split()[0], item[7], ctm.get(item[8])[1], prm.get(item[9])[1], ctm.get_flag(item[8])[0]]
+                av_shop = []
+                for shop in shops:
+                    db_shop=DB_SHOP(shop[0], slashes)
+                    ProductShopModel(db_shop.get_connection()).init_table()
+                    shop_model=ProductShopModel(db_shop.get_connection())
+                    id_pr=shop_model.get_id(item[1])
+                    if (type(id_pr).__name__!="NoneType"):
+                        av_shop+=[shop]
+                item+=[av_shop]
                 items+=[item]
         cm.update(id = int(value), products=product)
         res["category_result"]=[items,name_of_category, (len(items)>0)]
@@ -291,6 +303,15 @@ def search(filter, value):
             if (item!=None):
                 product+=i+" "
                 item = [item[0], item[1], item[2], item[3], item[4], item[5], item[6].split()[0], item[7], cm.get(item[10])[1], prm.get(item[9])[1]]
+                av_shop = []
+                for shop in shops:
+                    db_shop = DB_SHOP(shop[0], slashes)
+                    ProductShopModel(db_shop.get_connection()).init_table()
+                    shop_model = ProductShopModel(db_shop.get_connection())
+                    id_pr = shop_model.get_id(item[1])
+                    if (type(id_pr).__name__ != "NoneType"):
+                        av_shop += [shop]
+                item += [av_shop]
                 items+=[item]
         ctm.update(id=int(value), products=product)
         res["country_result"] = [items, name_of_country, (len(items) > 0), ctm.get_flag(int(value))[0]]
@@ -308,6 +329,15 @@ def search(filter, value):
             if (item!=None):
                 product+=i+" "
                 item = [item[0], item[1], item[2], item[3], item[4], item[5], item[6].split()[0], item[7], ctm.get(item[8])[1], cm.get(item[10])[1], ctm.get_flag(item[8])[0]]
+                av_shop = []
+                for shop in shops:
+                    db_shop = DB_SHOP(shop[0], slashes)
+                    ProductShopModel(db_shop.get_connection()).init_table()
+                    shop_model = ProductShopModel(db_shop.get_connection())
+                    id_pr = shop_model.get_id(item[1])
+                    if (type(id_pr).__name__ != "NoneType"):
+                        av_shop += [shop]
+                item += [av_shop]
                 items+=[item]
         prm.update(int(value), products=product)
         res["producer_result"]=[items, name_of_producer, (len(items)>0)]
@@ -338,21 +368,33 @@ def search(filter, value):
         product_items = []
         for product in products:
             if (product[1].find(value)!=-1):
-                product_items+=[product[0], product[1], product[2], product[3], product[4], product[5], product[6].split()[0], product[7], ctm.get(product[8])[1], ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1]]
+                av_shop = []
+                for shop in shops:
+                    db_shop = DB_SHOP(shop[0], slashes)
+                    ProductShopModel(db_shop.get_connection()).init_table()
+                    shop_model = ProductShopModel(db_shop.get_connection())
+                    id_pr = shop_model.get_id(product[1])
+                    if (type(id_pr).__name__ != "NoneType"):
+                        av_shop += [shop]
+                print([product[0], product[1], product[2], product[3], product[4], product[5],
+                                  product[6].split()[0], product[7], ctm.get(product[8])[1],
+                                  ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop])
+                product_items += [product[0], product[1], product[2], product[3], product[4], product[5],
+                                  product[6].split()[0], product[7], ctm.get(product[8])[1],
+                                  ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop]
         product_result = [[product_items], (len(product_items)>0)]
         search_result = [category_result, producer_result, country_result, product_result]
         res["search_result"]=[search_result, search_result[0][1] or search_result[1][1] or search_result[2][1] or search_result[3][1]]
     url = " search "+str(filter)+" "+str(value)
-    return render_template('search_result.html', res = res, url=url, shops = shops, date=str(datetime.datetime.now()))
+    return render_template('search_result.html', res = res, url=url, shops = shops, date=str(datetime.datetime.now()), list_of_shablons=list_of_shablons, shablons_true=shablons_true)
 
 @app.route('/delete/shop/<int:id>')
 def delete_shop(id):
     sm = ShopModel(db.get_connection())
     name = sm.get(id)[1]
-    shutil.rmtree(os.getcwd()+"\\static\\shops\\"+name)
+    shutil.rmtree(os.getcwd()+slashes+"static"+slashes+"shops"+slashes+name)
     sm.delete(id)
     return redirect('/show/shop')
-
 
 @app.route('/choose/shop/<int:id>', methods=["GET", "POST"])
 def choose_product_shop(id):
@@ -384,7 +426,6 @@ def choose_product_shop(id):
         cf.select1.choices=categories
         return render_template('choose_product.html', form=cf, url = '/show/shop', args=args)
 
-
 @app.route('/pos/product/<int:id_pr>/shop/<int:id_sh>/<string:ret_url>', methods=["GET", "POST"])
 def pos_product(id_pr, id_sh, ret_url):
     psf = PosProduct()
@@ -392,7 +433,7 @@ def pos_product(id_pr, id_sh, ret_url):
     name_of_product = pm.get(id_pr)[1]
     sm = ShopModel(db.get_connection())
     name_of_shop = sm.get(id_sh)[1]
-    db_shop = DB_SHOP(name_of_shop)
+    db_shop = DB_SHOP(name_of_shop, slashes)
     ProductShopModel(db.get_connection()).init_table()
     shop_product_model = ProductShopModel(db_shop.get_connection())
     id_product = shop_product_model.get_id(name_of_product)
@@ -419,10 +460,10 @@ def pos_product(id_pr, id_sh, ret_url):
                     s.split('_')]
     else:
         pos_products=[]
-    images = os.listdir(os.getcwd()+'\\static\\shops\\'+name_of_shop+"\\img")
+    images = os.listdir(os.getcwd()+slashes+'static'+slashes+'shops'+slashes+name_of_shop+slashes+"img")
     imagess = []
     for i in images:
-        im = Image.open(os.getcwd()+'\\static\\shops\\'+name_of_shop+"\\img\\"+i)
+        im = Image.open(os.getcwd()+slashes+'static'+slashes+'shops'+slashes+name_of_shop+slashes+"img"+slashes+i)
         width, height = im.size
         print(width, height)
         imagess.append([i, width, height, []])
@@ -434,6 +475,42 @@ def pos_product(id_pr, id_sh, ret_url):
     url = '/pos/product/'+str(id_pr)+'/shop/'+str(id_sh)+"?"
     ret_url="/".join(ret_url.split(" "))
     return render_template('pos_product.html', form = psf, name = name_of_product, number = product_number, images=images, name_of_shop=name_of_shop, url = url, ret_url=ret_url, price=price)
+
+@app.route('/show/position/<int:id_pr>/shop/<int:id_sh>/<string:ret_url>', methods=["GET", "POST"])
+def show_pos(id_pr, id_sh, ret_url):
+    pm = ProductModel(db.get_connection())
+    name_of_product = pm.get(id_pr)[1]
+    sm = ShopModel(db.get_connection())
+    name_of_shop = sm.get(id_sh)[1]
+    db_shop = DB_SHOP(name_of_shop, slashes)
+    ProductShopModel(db.get_connection()).init_table()
+    shop_product_model = ProductShopModel(db_shop.get_connection())
+    id_product = shop_product_model.get_id(name_of_product)[0]
+    product = shop_product_model.get(id_product)
+    product_number = product[3]
+    locations = product[2]
+    price = product[4]
+    if (type(locations).__name__ != 'NoneType' and locations != ''):
+        s = locations
+        s = s[0:len(s) - 1]
+        pos_products = [[int(i.split(':')[0]), [list(map(str, j.split("|"))) for j in i.split(':')[1].split()]] for i in
+                        s.split('_')]
+    else:
+        pos_products = []
+    images = os.listdir(os.getcwd() + slashes + 'static' + slashes + 'shops' + slashes + name_of_shop + slashes + "img")
+    imagess = []
+    for i in images:
+        im = Image.open(
+            os.getcwd() + slashes + 'static' + slashes + 'shops' + slashes + name_of_shop + slashes + "img" + slashes + i)
+        width, height = im.size
+        imagess.append([i, width, height, []])
+    images = imagess
+    for i in pos_products:
+        for j in i[1]:
+            images[i[0]][3].append(j)
+    item=[product[1], product[4], product[5], product[6], product[7], product_number]
+    ret_url = '/'.join(ret_url.split(" "))
+    return render_template('show_pos_product.html', time=str(datetime.datetime.now()), item=item, ret_url=ret_url, images=images, name_of_shop=name_of_shop)
 
 @app.route('/show/shop')
 def show_shop():
@@ -452,8 +529,8 @@ def create_shop():
         if (sm.exists(csf.name.data)[0]):
             args+=["name_exists"]
         else:
-            os.makedirs(os.getcwd()+"\\static\\shops\\"+csf.name.data)
-            os.makedirs(os.getcwd()+"\\static\\shops\\"+csf.name.data+"\\"+"img")
+            os.makedirs(os.getcwd()+slashes+"static"+slashes+"shops"+slashes+csf.name.data)
+            os.makedirs(os.getcwd()+slashes+"static"+slashes+"shops"+slashes+csf.name.data+slashes+"img")
             i=1
             sm.insert(csf.name.data, csf.location.data)
             id = sm.get_id(csf.name.data)[0]
@@ -461,13 +538,11 @@ def create_shop():
                 trash = img.filename.split(".")
                 img.filename = str(id)+"_"+str(i)+'.'+trash[len(trash)-1]
                 i += 1
-                img.save(os.path.join(os.getcwd()+"\\static\\shops\\"+csf.name.data+"\\"+"img", img.filename))
-            db_shop = DB_SHOP(csf.name.data)
+                img.save(os.path.join(os.getcwd()+slashes+"static"+slashes+"shops"+slashes+csf.name.data+slashes+"img", img.filename))
+            db_shop = DB_SHOP(csf.name.data, slashes)
             shop_product = ProductShopModel(db_shop.get_connection()).init_table()
             args+=["OK"]
     return render_template('new_shop.html', args=args, form = csf)
-
-
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -483,8 +558,8 @@ def register():
         if ("exists" not in args and "email_exists" not in args):
             print(lf.email.data)
             um.insert(lf.login.data, lf.email.data, lf.password.data, "user", ' ', lf.sales_notif.data, lf.sales_notif_fav_products.data)
-            os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data)
-            os.makedirs(os.getcwd()+"\\"+"users"+"\\"+lf.login.data+"\\"+"favourite_templates")
+            os.makedirs(os.getcwd()+slashes+"users"+slashes+lf.login.data)
+            os.makedirs(os.getcwd()+slashes+"users"+slashes+lf.login.data+slashes+"favourite_templates")
     return render_template('registration.html', form = lf, args=args)
 
 @app.route('/make_admin/<string:username>')
@@ -498,7 +573,6 @@ def up_worker(shop_name,username):
     um = UsersModel(db.get_connection())
     um.update(user_name=username, rights="worker_"+shop_name)
     return "OK"
-
 
 @app.route('/forgot_login', methods=["GET", "POST"])
 def forgot_login():
@@ -640,6 +714,7 @@ def add_fav_product():
             categories = cm.get_all()
             categories = [i[1] for i in categories]
             cf.select1.choices = categories
+            cf.select2.data = None
             return render_template('choose_product.html', form=cf, url='/show/fav/products', args=args)
         else:
             cm = CategoryModel(db.get_connection())
@@ -662,6 +737,184 @@ def add_fav_product():
         cf.select1.choices = categories
         return render_template('choose_product.html', form=cf, url='/show/fav/products', args=args)
 
+@app.route('/show/shablons', methods = ["GET", "POST"])
+def show_shablons():
+    username = session['username']
+    shablons=os.listdir(os.getcwd()+slashes+"users"+slashes+username+slashes+"favourite_templates")
+    shablons=[i[0:len(i)-4] for i in shablons]
+    return render_template('work_with_shablons.html', shablons=shablons, url=" show shablons")
+
+@app.route('/change/shablon/<string:name>/<string:ret_url>', methods=["GET", "POST"])
+def change_shablon(name, ret_url):
+    products = []
+    file = open(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt",'r')
+    pm = ProductModel(db.get_connection())
+    s=""
+    for line in file:
+        product = line.strip().split()
+        item = pm.get(product[0])
+        if (len(item)>0):
+            s+=" ".join(product)+"\n"
+            products+=[[item[0], item[1],product[1]]]
+    print(products)
+    file.close()
+    file = open(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt",'w')
+    file.write(s)
+    file.close()
+    url1 = '/'.join(ret_url.split(" "))
+    url = " change shablon "+name+"|"+ret_url
+    print(url)
+    return render_template('work_with_shablon.html', products=products, name=name, ret_url=url1, url=url, time=str(datetime.datetime.now()))
+
+@app.route('/delete/shablon/<string:name>/<string:ret_url>', methods=["GET", "POST"])
+def delete_shablon(name, ret_url):
+    os.remove(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt")
+    url = '/'.join(ret_url.split(" "))
+    return redirect(url)
+
+@app.route('/create/shablon', methods=["GET", "POST"])
+def create_shablon():
+    sf = ShablonForm()
+    args=[]
+    if (request.method=="POST"):
+        shablons = os.listdir(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates")
+        print(shablons)
+        try:
+            shablons.index(sf.name.data+".txt")
+            args+=["exists"]
+        except ValueError:
+            args+=["OK"]
+            open(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+sf.name.data+".txt",'x')
+    return render_template('create_shablon.html', form=sf, args=args)
+
+@app.route('/choose/shablon/<string:name>/<string:ret_url>', methods=["GET", "POST"])
+def choose_product_shablon(name, ret_url):
+    cp = ChooseProduct()
+    args=["shablon"]
+    pm = ProductModel(db.get_connection())
+    cm = CategoryModel(db.get_connection())
+    if (request.method=="POST"):
+        if (pm.exists(cp.select2.data)[0]):
+            id_pr=int(pm.get_id(cp.select2.data)[0])
+            file = open(os.getcwd()+slashes+'users'+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt", "r")
+            s=""
+            kek = True
+            for line in file:
+                product=line.strip().split()
+                if (int(product[0])==id_pr):
+                    kek = False
+                item = pm.get(int(product[0]))
+                if (len(item)>0):
+                    s+=" ".join(product)+"\n"
+            file.close()
+            file = open(os.getcwd()+slashes+'users'+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt",'w')
+            file.write(s)
+            file.close()
+            if (kek):
+                args+=["OK"]
+                file = open(os.getcwd()+slashes+'users'+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt", 'a')
+                file.write(str(id_pr)+" 1\n")
+                file.close()
+            else:
+                args+=["exists"]
+            cp.select2.data=None
+        else:
+            args+=["choose_product"]
+            products = cm.get_products(cm.get_id(cp.select1.data)[0])[0].split()
+            productss=" "
+            product=[]
+            for i in products:
+                item = pm.get(int(i))
+                if (len(item)>0):
+                    productss+=i+" "
+                    product+=[item[1]]
+            cm.update(cm.get_id(cp.select1.data)[0], products=productss)
+            cp.select2.choices=product
+            url = '/'.join(ret_url.split("|")[0].split(" "))+"/"+ret_url.split("|")[1]
+            return render_template('choose_product.html',  args=args, url = url, form=cp, name_shablon=name)
+    categories = cm.get_all()
+    categories=[i[1] for i in categories]
+    cp.select1.choices=categories
+    args+=["choose_category"]
+    url = '/'.join(ret_url.split("|")[0].split(" "))+"/"+ret_url.split("|")[1]
+    return render_template('choose_product.html', args=args, url=url, form=cp, name_shablon=name)
+
+@app.route('/reduce/shablon/<string:name>/<int:id>/<int:number>/<string:ret_url>', methods=["GET", "POST"])
+def reduce_from_shablon(name, id, number, ret_url):
+    file = open(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt", 'r')
+    s = ""
+    pm = ProductModel(db.get_connection())
+    for line in file:
+        product=line.strip().split()
+        if (int(product[0])==id):
+            product[1] = int(product[1])-number
+            if (product[1] > 0):
+                product[1]=str(product[1])
+                s+=" ".join(product)+"\n"
+        else:
+            item=pm.get(int(product[0]))
+            if (len(item)>0):
+                s+=" ".join(product)+"\n"
+    file.close()
+    file = open(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt",'w')
+    file.write(s)
+    file.close()
+    url = '/'.join(ret_url.split("|")[0].split(" "))+"/"+ret_url.split("|")[1]
+    return redirect(url)
+
+@app.route('/add/shablon/<string:name>/<int:id>/<int:number>/<string:ret_url>', methods=["GET","POST"])
+def add_from_shablon(name, id, number, ret_url):
+    file = open(os.getcwd() + slashes + "users" + slashes + session[
+        'username'] + slashes + "favourite_templates" + slashes + name + ".txt", 'r')
+    s = ""
+    pm = ProductModel(db.get_connection())
+    for line in file:
+        product = line.strip().split()
+        if (int(product[0]) == id):
+            product[1] = int(product[1]) + number
+            if (product[1] > 0):
+                product[1] = str(product[1])
+                s += " ".join(product) + "\n"
+        else:
+            item = pm.get(int(product[0]))
+            if (len(item) > 0):
+                s += " ".join(product) + "\n"
+    file.close()
+    file = open(os.getcwd() + slashes + "users" + slashes + session[
+        'username'] + slashes + "favourite_templates" + slashes + name + ".txt", 'w')
+    file.write(s)
+    file.close()
+    if (ret_url.find('|')!=-1):
+        url = '/'.join(ret_url.split("|")[0].split(" ")) + "/" + ret_url.split("|")[1]
+    else:
+        url = '/'.join(ret_url.split(" "))
+    return redirect(url)
+
+@app.route('/add/busket/shablon/<string:name>/<string:ret_url>', methods=["GET", "POST"])
+def add_busket_from_shablon(name, ret_url):
+    file = open(os.getcwd()+slashes+"users" + slashes + session['username'] +slashes+"favourite_templates"+ slashes +name+".txt", 'r')
+    s=""
+    pm = ProductModel(db.get_connection())
+    for line in file:
+        product = line.strip().split()
+        item = pm.get(int(product[0]))
+        if (len(item)>0):
+            print(item)
+            s+=" ".join(product)+"\n"
+            print(session['food'].keys())
+            if (product[0] in session['food'].keys()):
+                session['food'][product[0]] += int(product[1])
+            else:
+                session['food'][product[0]] = int(product[1])
+            session.modified=True
+            print(session['food'].keys())
+    file.close()
+    file = open(os.getcwd()+slashes+"users" + slashes + session['username'] +slashes+"favourite_templates"+ slashes +name+".txt",'w')
+    file.write(s)
+    file.close()
+    print(session.items())
+    url = "/".join(ret_url.split(" "))
+    return redirect(url)
 
 @app.route("/profile")
 def profile():
@@ -674,17 +927,83 @@ def login():
     args = []
     if (request.method == "POST"):
         if (us.exists(lf.username.data, lf.password.data))[0]:
-            session['username']=lf.username.data
-            session['rights'] = us.get_pole(username = lf.username.data, rights = "")
+            session['username'] = lf.username.data
+            session['rights'] = us.get_pole(username=lf.username.data, rights="")
+            session['food'] = dict()
+            session.modified=True
             return redirect('/profile')
         else:
-            args+=["not_exists"]
-    return render_template("login.html", form = lf, args=args)
+            args += ["not_exists"]
+    print(session.items())
+    return render_template("login.html", form=lf, args=args)
+
+@app.route('/add/busket/<int:id>/<int:number>/<string:ret_url>', methods=["GET", "POST"])
+def add_busket(id, number, ret_url):
+    if 'food' not in session.keys():
+        session['food']=dict()
+    if str(id) in session['food'].keys():
+        session['food'][str(id)]+=number
+    else:
+        session['food'][str(id)]=number
+    session.modified=True
+    print(session['food'].keys())
+    url = '/'.join(ret_url.split(" "))
+    return  redirect(url)
+
+@app.route('/reduce/busket/<int:id>/<int:number>/<string:ret_url>', methods=["GET", "POST"])
+def reduce_busket(id, number, ret_url):
+    if 'food' not in session.keys():
+        session['food']=dict()
+    if (str(id) in session['food'].keys()):
+        session['food'][str(id)]-=number
+        if (session['food'][str(id)]<=0):
+            del  session['food'][str(id)]
+    session.modified=True
+    url = '/'.join(ret_url.split(" "))
+    return redirect(url)
+
+@app.route('/delete/busket/<int:id>/<string:ret_url>', methods=["GET", "POST"])
+def delete_from_busket(id, ret_url):
+    if 'food' not in session.keys():
+        session['food']=dict()
+    if str(id) in session['food'].keys():
+        del session['food'][str(id)]
+    session.modified=True
+    url = '/'.join(ret_url.split(" "))
+    return redirect(url)
+
+@app.route('/show/busket', methods=["GET", "POST"])
+def show_busket():
+    if 'food' not in session.keys():
+        session['food']=dict()
+    busket = session['food']
+    pm = ProductModel(db.get_connection())
+    products = []
+    summ = 0
+    print(session['food'].keys())
+    for key in busket.keys():
+        product = pm.get(int(key))
+        if (len(product)>0):
+            products+=[[product[0], product[1], product[2], product[3], product[4], product[5], busket[key]]]
+            if (str(datetime.datetime.now())>product[4] and str(datetime.datetime.now())<product[5]):
+                summ+=product[3]*busket[key]
+            else:
+                summ+=product[2]*busket[key]
+        else:
+            del busket[key]
+    session.modified=True
+    url = " show busket"
+    return render_template('work_with_buskets.html', products=products, time = str(datetime.datetime.now()), summ = summ, url=url)
 
 @app.route('/exit')
 def ex():
-    del session['username']
-    del session['rights']
+    if "username" in session.keys():
+        del session['username']
+    if "rights" in session.keys():
+        del session['rights']
+    if "food" in session.keys():
+        del session['food']
+    session.modified=True
     return redirect('/')
 
 @app.errorhandler(404)
@@ -707,7 +1026,6 @@ def dated_url_for(endpoint, **values):
                                  endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
-
 
 if __name__ == '__main__':
     app.run(debug=True)

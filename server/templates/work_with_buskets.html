@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p>Товары в корзине:</p>
+    <br>
+    {% for product in products %}
+        <p>{{ product[1] }}</p>
+        {% if time<product[5] and time>product[4] %}
+            <p><span style="text-decoration: line-through">{{ product[2] }}</span> {{ product[3] }}</p>
+        {% endif %}
+        {% if not() %}
+            <p>{{ product[2] }}</p>
+        {% endif %}
+        <a href="/reduce/busket/{{ product[0] }}/1/{{ url }}">-</a>
+        <p>{{ product[6] }}</p>
+        <a href="/add/busket/{{ product[0] }}/1/{{ url }}">+</a>
+        <a href="/delete/busket/{{ product[0] }}/{{ url }}">Удалить</a>
+    {% endfor %}
+    <p>Итого: {{ summ }}</p>
+</body>
+</html>

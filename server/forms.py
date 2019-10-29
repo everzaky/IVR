@@ -75,3 +75,7 @@ class PosProduct(FlaskForm):
     output = StringField()
     submit = SubmitField()
     price = FloatField()
+
+class ShablonForm(FlaskForm):
+    name = StringField()
+    submit = SubmitField()

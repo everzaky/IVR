@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="/show/shablons">Вернуться обратно</a>
+    <br>
+    <br>
+    <form method="post">
+        {% if "exists" in args %}
+            <p>Шаблон с таким названием уже существует</p>
+        {% endif %}
+        {% if "OK" in args%}
+            <p>Шаблон успешно создан</p>
+        {% endif %}
+        {{ form.name }}
+        {{ form.submit }}
+    </form>
+</body>
+</html>

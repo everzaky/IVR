@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{{ url_for('static', filename='point.css') }}" rel="stylesheet" type="text/css">
+    <title>Title</title>
+</head>
+<body>
+    <a href="{{ ret_url }}">Вернуться обратно!</a>
+    <br>
+    <p>Название товара: {{ item[0]}}</p>
+    <br>
+    <p>Текущее количество товара: {{ item[5] }}</p>
+    <br>
+    <p>Цена в магазине:
+        {% if time >item[3] and time<item[4] %}
+            <span style="text-decoration: line-through">{{ item[1] }}</span> <span>{{ item[2] }}</span>
+        {% endif %}
+        {% if not(time >item[3] and time<item[4]) %}
+            <span>{{ item[1] }}</span>
+        {% endif %}
+    </p>
+    <br>
+    {% for image in images %}
+        <div class="clickable" style="background-image: url('/static/shops/{{ name_of_shop }}/img/{{ image[0] }}'); width: {{ image[1]}}px; height: {{ image[2]}}px " >
+            {% for point in image[3] %}
+                <div class="pointer" style="left: {{ point[1] }}; top:{{ point[0] }}"></div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</body>
+</html>

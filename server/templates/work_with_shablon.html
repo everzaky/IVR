@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="{{ ret_url }}">Вернуться обратно</a>
+    <br>
+    {% for product in products %}
+        <p>{{ product[1] }}</p>
+        <br>
+        <a href="/reduce/shablon/{{ name }}/{{ product[0] }}/1/{{ url }}">-</a>
+        <p>{{ product[2] }}</p>
+        <a href="/add/shablon/{{ name }}/{{ product[0] }}/1/{{ url }}">+</a>
+        <a href="/delete/shablon/{{ name }}/{{ product[0] }}/{{ url }}">Удалить</a>
+    {% endfor %}
+    <a href="/choose/shablon/{{ name }}/{{ url }}">Добавить продукт</a>
+</body>
+</html>

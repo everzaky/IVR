@@ -7,7 +7,7 @@ class ProductModel:
         cursor = self.connection.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS products
                             (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                             name_of_products VARCHAR(50),
+                             name_of_products VARCHAR(50), 
                              price REAL ,
                              sale REAL ,
                              date_of_start TEXT,

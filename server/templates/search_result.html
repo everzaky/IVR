@@ -36,12 +36,26 @@
                     <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
-                            <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
+                            {% if "username" in session %}
+                                <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
+                            {% endif %}
+                            {% if shablons_true %}
+                                {% for shablon in list_of_shablons %}
+                                    <a href="/add/shablon/{{shablon}}/{{ item[0] }}/1/{{ url }}">{{ shablon }}</a>
+                                {% endfor %}
+                            {% endif %}
+                            <a href="/add/busket/{{ item[0] }}/1/{{ url }}">В корзину</a>
                         </div>
                         <a>Расположить товар в:</a>
                         <div class="table">
                             {% for shop in shops %}
                                 <a href="/pos/product/{{ item[0] }}/shop/{{ shop[1] }}/{{ url }}">{{shop[0]}}</a>
+                            {% endfor %}
+                        </div>
+                        <a>Узнать о товаре в магазине:</a>
+                        <div class="table">
+                            {% for shop in item[11] %}
+                                <a href="/show/position/{{ item[0] }}/shop/{{ shop[1] }}/{{ url }}">{{ shop[0] }}</a>
                             {% endfor %}
                         </div>
                     </div>
@@ -81,7 +95,27 @@
                     <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
+                            {% if "username" in session %}
                             <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
+                            {% endif %}
+                            {% if shablons_true %}
+                                {% for shablon in list_of_shablons %}
+                                    <a href="/add/shablon/{{shablon}}/{{ item[0] }}/1/{{ url }}">{{ shablon }}</a>
+                                {% endfor %}
+                            {% endif %}
+                            <a href="/add/busket/{{ item[0] }}/1/{{ url }}">В корзину</a>
+                        </div>
+                        <a>Расположить товар в:</a>
+                        <div class="table">
+                            {% for shop in shops %}
+                                <a href="/pos/product/{{ item[0] }}/shop/{{ shop[1] }}/{{ url }}">{{shop[0]}}</a>
+                            {% endfor %}
+                        </div>
+                        <a>Узнать о товаре в магазине:</a>
+                        <div class="table">
+                            {% for shop in item[10] %}
+                                <a href="/show/position/{{ item[0] }}/shop/{{ shop[1] }}/{{ url }}">{{ shop[0] }}</a>
+                            {% endfor %}
                         </div>
                     </div>
 
@@ -119,7 +153,27 @@
                     <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
+                            {% if "username" in session %}
                             <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
+                            {% endif %}
+                            {% if shablons_true %}
+                                {% for shablon in list_of_shablons %}
+                                    <a href="/add/shablon/{{shablon}}/{{ item[0] }}/1/{{ url }}">{{ shablon }}</a>
+                                {% endfor %}
+                            {% endif %}
+                            <a href="/add/busket/{{ item[0] }}/1/{{ url }}">В корзину</a>
+                        </div>
+                        <a>Расположить товар в:</a>
+                        <div class="table">
+                            {% for shop in shops %}
+                                <a href="/pos/product/{{ item[0] }}/shop/{{ shop[1] }}/{{ url }}">{{shop[0]}}</a>
+                            {% endfor %}
+                        </div>
+                        <a>Узнать о товаре в магазине:</a>
+                        <div class="table">
+                            {% for shop in item[11] %}
+                                <a href="/show/position/{{ item[0] }}/shop/{{ shop[1] }}/{{ url }}">{{ shop[0] }}</a>
+                            {% endfor %}
                         </div>
                     </div>
 
@@ -162,23 +216,43 @@
                     <div>
                         <p>{{ product[1] }}</p>
                         <br>
-                        <img src="/static/img/{{ product[5] }}" style="width: 50px; height: 50px">
+                        <img src="/static/img/{{ product[6] }}" style="width: 50px; height: 50px">
                         <br>
-                        <p>Товарная категория: {{ product[10] }}</p>
+                        <p>Товарная категория: {{ product[11] }}</p>
                         <br>
-                        <p>Описание продукта: {{ product[6] }}</p>
+                        <p>Описание продукта: {{ product[7] }}</p>
                         <br>
-                        <p>Страна производства: {{ product[7] }}</p>
+                        <p>Страна производства: {{ product[8] }}</p>
                         <br>
-                        <img src="/static/countries/{{ product[8] }}" style="width: 150px; height: 50px">
+                        <img src="/static/countries/{{ product[9] }}" style="width: 150px; height: 50px">
                         <br>
-                        <p>Компания-изготовитель: {{ product[9] }}</p>
+                        <p>Компания-изготовитель: {{ product[10] }}</p>
                         <br>
                         <a href="/delete/product/{{ product[0]}}/{{ url }}">Удалить товар</a>
                         <div class="table-hover">
                         <a>Добавить в..</a>
                         <div class="table">
-                            <a href="/add/fav/products/{{item[0]}}/{{url}}">В любимые товары</a>
+                            {% if "username" in session %}
+                            <a href="/add/fav/products/{{product[0]}}/{{url}}">В любимые товары</a>
+                            {% endif %}
+                            {% if shablons_true %}
+                                {% for shablon in list_of_shablons %}
+                                    <a href="/add/shablon/{{shablon}}/{{ product[0] }}/1/{{ url }}">{{ shablon }}</a>
+                                {% endfor %}
+                            {% endif %}
+                            <a href="/add/busket/{{ product[0] }}/1/{{ url }}">В корзину</a>
+                        </div>
+                        <a>Расположить товар в:</a>
+                        <div class="table">
+                            {% for shop in shops %}
+                                <a href="/pos/product/{{ product[0] }}/shop/{{ shop[1] }}/{{ url }}">{{shop[0]}}</a>
+                            {% endfor %}
+                        </div>
+                        <a>Узнать о товаре в магазине:</a>
+                        <div class="table">
+                            {% for shop in product[12] %}
+                                <a href="/show/position/{{ product[0] }}/shop/{{ shop[1] }}/{{ url }}">{{ shop[0] }}</a>
+                            {% endfor %}
                         </div>
                         </div>
                     </div>
