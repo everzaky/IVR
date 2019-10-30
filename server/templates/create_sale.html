@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="/show/sales">Вернуться обратно</a>
+    <br>
+    {% if "OK" in args %}
+        <p>Акция успешно создана</p>
+    {% endif %}
+    {% if "exists" in args %}
+        <p>Акция с данным именем уже сущуствует</p>
+    {% endif %}
+    {% if "end < start" in args %}
+        <p>Дата окончания акции не может быть меньше даты старта акции</p>
+    {% endif %}
+    {% if "start < time"  in args %}
+        <p>Дата старта акции не может быть меньше текущей даты</p>
+    {% endif %}
+    {% if "end < time" in args %}
+        <p>Дата окончания акции не может быть меньше текуще даты</p>
+    {% endif %}
+    <form method="post">
+        {{ form.name }}
+        <input type="date" name = "start_of_sale">
+        <input type="date" name = "end_of_sale">
+        <select name="places" multiple>
+            {% for place in form.places.choices %}
+                <option>{{ place }}</option>
+            {% endfor %}
+        </select>
+        {{form.submit }}
+    </form>
+</body>
+</html>

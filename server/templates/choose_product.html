@@ -14,6 +14,12 @@
         {% if "shablon" in args %}
             <p>Товар успешно добавлен в шаблон: {{ name_shablon }}</p>
         {% endif %}
+        {% if "sale" in args %}
+            <p>Товар успешно добален в следующую акцию: {{ name_of_sale }}</p>
+        {% endif %}
+        {% if "category" in args %}
+            <p>Категория {{ name_of_category }} успешно добавлена в следующую акцию: {{ name_of_sale }}</p>
+        {% endif %}
     {% endif %}
     {% if "exists" in args %}
         {% if "favproducts" in args %}
@@ -21,6 +27,12 @@
         {% endif %}
         {% if "shablon" in args %}
             <p>Товар уже есть в шаблоне: {{ name_shablon }}</p>
+        {% endif %}
+        {% if "sale" in args %}
+            <p>Товар уже есть в акции: {{ name_of_sale }}</p>
+        {% endif %}
+        {% if "category" in args %}
+            <p>Все товары категории  {{ name_of_category }} в следующей акции: {{ name_of_sale }}</p>
         {% endif %}
     {% endif %}
     <form method = "post">

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="/show/sales">Вернуться обратно</a>
+    <br>
+    <form method="post">
+        {% for product in products %}
+            <p>Цена товара {{ product[1] }}:</p>
+            <input name="{{ product[0] }}" type="text" placeholder="{{ product[2] }}">
+            <a href="/delete/sale/{{ name_of_sale }}/product/{{ product[0] }}/{{ url }}">Удалить</a>
+            <br>
+        {% endfor %}
+        <button type="submit">Изменить данные</button>
+    </form>
+    <a href="/choose/product/sale/{{ name_of_sale }}/{{ url }}">Выбрать продукт</a>
+    <a href="/choose/category/sale/{{ name_of_sale }}/{{ url }}">Выбрать категорию</a>
+</body>
+</html>

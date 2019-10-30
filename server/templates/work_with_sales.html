@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href="/profile">Вернуться обратно</a>
+    <br>
+    {% for sale in sales %}
+        <p>Название акции: {{ sale[0] }}</p>
+        <p>Проводиться в следующих магазинах:
+            {% for shop in sale[3] %}
+                <span>{{ shop }}</span>
+            {% endfor %}
+        </p>
+        <p>Дата начала акции: {{ sale[1] }}</p>
+        <p>Дата окончании акции: {{ sale[2] }}</p>
+        <p>Количество позиций, участвующих в акции: {{ sale[4] }}</p>
+        <a href="/show/sale/{{ sale[0] }}">Посмотреть акцию</a>
+        <a href="/create/notif/{{ sale[0] }}">Сделать уведомление</a>
+        <a href="/delete/sale/{{ sale[0] }}">Удалить акцию</a>
+    {% endfor %}
+    <a href="/create/sale">Сделать акцию</a>
+</body>
+</html>

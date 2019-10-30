@@ -22,10 +22,10 @@
                     <p>Изготовитель: {{ item[9] }}</p>
                     <br>
                     <p> Цена в интернет-магазине:
-                    {% if date > item[4] and date < item[5] %}
+                    {% if date >= item[4] and date <= item[5] %}
                         <span style="text-decoration: line-through">{{ item[2] }}</span> <span>{{ item[3] }}</span>
                     {% endif %}
-                    {% if not(date > item[4] and date < item[5]) %}
+                    {% if not(date >= item[4] and date <= item[5]) %}
                         <span>{{ item[2] }}</span>
                     {% endif %}
                     </p>
@@ -81,10 +81,10 @@
                     <p>Описание товара: {{ item[7] }}</p>
                     <br>
                     <p>Цена в интернет-магазине:
-                        {% if date>item[4] and date<item[5] %}
+                        {% if date>=item[4] and date<=item[5] %}
                             <span style="text-decoration: line-through">{{ item[2] }}</span> <span>{{ item[3] }}</span>
                         {% endif %}
-                        {% if not(date>item[4] and date<item[5]) %}
+                        {% if not(date>=item[4] and date<=item[5]) %}
                             <span>{{ item[2] }}</span>
                         {% endif %}
                     </p>
@@ -140,10 +140,10 @@
                     <p>Описание товара: {{ item[7] }}</p>
                     <br>
                     <p> Цена в интернет-магазине:
-                    {% if date > item[4] and date < item[5] %}
+                    {% if date >= item[4] and date <= item[5] %}
                         <span style="text-decoration: line-through">{{ item[2] }}</span> <span>{{ item[3] }}</span>
                     {% endif %}
-                    {% if not(date > item[4] and date < item[5]) %}
+                    {% if not(date >= item[4] and date <= item[5]) %}
                         <span>{{ item[2] }}</span>
                     {% endif %}
                     </p>

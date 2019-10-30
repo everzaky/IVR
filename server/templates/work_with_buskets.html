@@ -9,10 +9,10 @@
     <br>
     {% for product in products %}
         <p>{{ product[1] }}</p>
-        {% if time<product[5] and time>product[4] %}
+        {% if time<=product[5] and time>=product[4] %}
             <p><span style="text-decoration: line-through">{{ product[2] }}</span> {{ product[3] }}</p>
         {% endif %}
-        {% if not() %}
+        {% if not(time<=product[5] and time>=product[4]) %}
             <p>{{ product[2] }}</p>
         {% endif %}
         <a href="/reduce/busket/{{ product[0] }}/1/{{ url }}">-</a>

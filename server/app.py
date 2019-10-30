@@ -12,7 +12,7 @@ from country_model import CountryModel
 from producer_model import ProducerModel
 from forms import *
 from PIL import Image
-from  decimal import Decimal
+from decimal import Decimal
 import smtplib
 import os
 import datetime
@@ -23,11 +23,11 @@ import platform
 
 slashes = ""
 
-if (platform.system()=="Windows"):
-    slashes="\\"
+if platform.system() == "Windows":
+    slashes = "\\"
 else:
-    slashes="/"
-app = Flask(__name__ , static_folder=os.getcwd()+slashes+"static")
+    slashes = "/"
+app = Flask(__name__, static_folder=os.getcwd()+slashes+"static")
 db = DB(slashes)
 
 UsersModel(db.get_connection()).init_table()
@@ -39,59 +39,62 @@ CountryModel(db.get_connection()).init_table()
 ProducerModel(db.get_connection()).init_table()
 
 app.config['SECRET_KEY'] = 'nothing'
-app.config['UPLOAD_FOLDER']=os.getcwd()+slashes+"static"+slashes+"img"
+app.config['UPLOAD_FOLDER'] = os.getcwd()+slashes+"static"+slashes+"img"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-#smtpObj.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
+# smtpObj.login('pauchan.mobile@mail.ru', 'YS8-pY8-ZZr-JSG')
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/",
+           methods=["GET", "POST"])
 def index():
     sm = SearchForm()
-    if (request.method=="POST"):
-            return redirect('/search/search/'+sm.value.data)
+    if request.method == "POST":
+        return redirect('/search/search/'+sm.value.data)
     else:
         cm = CategoryModel(db.get_connection())
         categories = cm.get_all()
-        return render_template("index.html", session=session, categories=categories, form2 = sm)
+        return render_template("index.html", session=session, categories=categories, form2=sm)
 
-@app.route('/create_category', methods=["GET", "POST"])
+@app.route('/create_category',
+           methods=["GET", "POST"])
 def create_category():
-    CF = CategoryForm()
-    CM = CategoryModel(db.get_connection())
-    if (request.method=="POST"):
-        name_category = CF.NameCategory.data
-        if (CM.exists(name_category)):
-            return render_template('category.html', args=["Exists"], form = CF)
+    cf = CategoryForm()
+    cm = CategoryModel(db.get_connection())
+    if request.method == "POST":
+        name_category = cf.NameCategory.data
+        if cm.exists(name_category):
+            return render_template('category.html', args=["Exists"], form=cf)
         else:
-            CM.insert(name_category," ")
-            return render_template('category.html', args=["Done"], form = CF)
-
+            cm.insert(name_category, " ")
+            return render_template('category.html', args=["Done"], form=cf)
     else:
-        return render_template('category.html', args=["kek"], form = CF)
+        return render_template('category.html', args=["kek"], form=cf)
 
-@app.route('/show/category')
+@app.route('/show/category'
+           )
 def show_categories():
     cm = CategoryModel(db.get_connection())
     categories = cm.get_all()
-    items = [ [i[1], i[0]] for i in categories]
+    items = [[i[1], i[0]] for i in categories]
     items.sort()
-    return render_template("work_with_categories.html", items = items)
+    return render_template("work_with_categories.html", items=items)
 
-@app.route('/update/category/<int:id>', methods=["GET", "POST"])
+@app.route('/update/category/<int:id>',
+           methods=["GET", "POST"])
 def update_category(id):
     cm = CategoryModel(db.get_connection())
     cf = RecreateCategoryForm()
     args = []
-    if (request.method=="POST"):
+    if request.method == "POST":
         name_category = cf.NameCategory.data
-        if (len(cf.NameCategory.data)!=0):
-            if (cm.exists(name_category)):
-                args+=["Exists"]
-                return render_template('recreate_category.html', form = cf, args=args)
+        if len(cf.NameCategory.data) != 0:
+            if cm.exists(name_category):
+                args += ["Exists"]
+                return render_template('recreate_category.html', form=cf, args=args)
             else:
-                cm.update(id = id, name_of_category=name_category)
+                cm.update(id=id, name_of_category=name_category)
                 return redirect('/show/category')
-    return render_template('recreate_category.html', args=args, form =cf)
+    return render_template('recreate_category.html', args=args, form=cf)
 
 def del_product(id):
     pm = ProductModel(db.get_connection())
@@ -211,7 +214,7 @@ def create_product():
                 img.save(os.path.join(app.config["UPLOAD_FOLDER"], img.filename))
             print(type(Pf.price.data), type(Decimal("0.0")))
             print(type(Pf.name.data), type(Pf.price.data), type(Decimal('0.0')), type(str(datetime.datetime.now)), type(datetime.datetime.now()), type(images), type(Pf.text.data), type(id_country), type(id_producer), type(id_category))
-            pm.insert(Pf.name.data, Pf.price.data, float(0), str(datetime.datetime.now()), str(datetime.datetime.now()),
+            pm.insert(Pf.name.data, Pf.price.data, float(0), str(datetime.date(year=2018, month=1, day=1)), str(datetime.datetime.now()),
                       images, Pf.text.data, id_country, id_producer, id_category)
             id_product = pm.get_id(Pf.name.data)[0]
             products = CM.get_products(id_category)[0]
@@ -287,6 +290,7 @@ def search(filter, value):
                         av_shop+=[shop]
                 item+=[av_shop]
                 items+=[item]
+                print(item)
         cm.update(id = int(value), products=product)
         res["category_result"]=[items,name_of_category, (len(items)>0)]
     if (filter=="country"):
@@ -386,7 +390,8 @@ def search(filter, value):
         search_result = [category_result, producer_result, country_result, product_result]
         res["search_result"]=[search_result, search_result[0][1] or search_result[1][1] or search_result[2][1] or search_result[3][1]]
     url = " search "+str(filter)+" "+str(value)
-    return render_template('search_result.html', res = res, url=url, shops = shops, date=str(datetime.datetime.now()), list_of_shablons=list_of_shablons, shablons_true=shablons_true)
+    print(datetime.date.today())
+    return render_template('search_result.html', res = res, url=url, shops = shops, date=str(datetime.date.today()), list_of_shablons=list_of_shablons, shablons_true=shablons_true)
 
 @app.route('/delete/shop/<int:id>')
 def delete_shop(id):
@@ -868,11 +873,13 @@ def add_from_shablon(name, id, number, ret_url):
         'username'] + slashes + "favourite_templates" + slashes + name + ".txt", 'r')
     s = ""
     pm = ProductModel(db.get_connection())
+    kek = True
     for line in file:
         product = line.strip().split()
         if (int(product[0]) == id):
             product[1] = int(product[1]) + number
             if (product[1] > 0):
+                kek = False
                 product[1] = str(product[1])
                 s += " ".join(product) + "\n"
         else:
@@ -883,11 +890,32 @@ def add_from_shablon(name, id, number, ret_url):
     file = open(os.getcwd() + slashes + "users" + slashes + session[
         'username'] + slashes + "favourite_templates" + slashes + name + ".txt", 'w')
     file.write(s)
+    if (kek):
+        file.write(str(id)+" "+str(number)+"\n")
     file.close()
     if (ret_url.find('|')!=-1):
         url = '/'.join(ret_url.split("|")[0].split(" ")) + "/" + ret_url.split("|")[1]
     else:
         url = '/'.join(ret_url.split(" "))
+    return redirect(url)
+
+@app.route('/delete/shablon/<string:name>/<int:id>/<string:ret_url>', methods=["GET", "POST"])
+def delete_from_shablon(name, id, ret_url):
+    file =open(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt", 'r')
+    s=""
+    for line in file:
+        item = line.strip().split()
+        if (item[0]!=str(id)):
+            s+=" ".join(item)+"\n"
+    file.close()
+    file =open(os.getcwd()+slashes+"users"+slashes+session['username']+slashes+"favourite_templates"+slashes+name+".txt", 'w')
+    file.write(s)
+    file.close()
+    if (ret_url.find("|")!=-1):
+        url = ret_url.split("|")
+        url = "/".join(url[0].split(" "))+"/"+url[1]
+    else:
+        url = "/".join(ret_url.split(" "))
     return redirect(url)
 
 @app.route('/add/busket/shablon/<string:name>/<string:ret_url>', methods=["GET", "POST"])
@@ -985,7 +1013,7 @@ def show_busket():
         product = pm.get(int(key))
         if (len(product)>0):
             products+=[[product[0], product[1], product[2], product[3], product[4], product[5], busket[key]]]
-            if (str(datetime.datetime.now())>product[4] and str(datetime.datetime.now())<product[5]):
+            if (str(datetime.date.today())>=product[4] and str(datetime.date.today())<=product[5]):
                 summ+=product[3]*busket[key]
             else:
                 summ+=product[2]*busket[key]
@@ -993,8 +1021,241 @@ def show_busket():
             del busket[key]
     session.modified=True
     url = " show busket"
-    return render_template('work_with_buskets.html', products=products, time = str(datetime.datetime.now()), summ = summ, url=url)
+    return render_template('work_with_buskets.html', products=products, time = str(datetime.date.today()), summ = summ, url=url)
 
+@app.route('/show/sales', methods=["GET", "POST"])
+def show_sales():
+    list_sales = os.listdir(os.getcwd()+slashes+"sales")
+    sales = []
+    sm = ShopModel(db.get_connection())
+    for sale in list_sales:
+        i = 0
+        file = open(os.getcwd()+slashes+"sales"+slashes+sale)
+        av_sale = []
+        for line in file:
+             if (i==0):
+                 av_sale += [line.strip()]
+             elif i==1:
+                 av_sale += line.strip().split()
+             elif i==2:
+                 shops = line.strip().split()
+                 sh=[]
+                 for shop in shops:
+                     item = sm.get(shop)
+                     if (type(item).__name__!="NoneType"):
+                         sh+=[item[1]]
+                 av_sale+=[[" ".join(sh)]]
+             i+=1
+        av_sale+=[i-3]
+        file.close()
+        sales+=[av_sale]
+    return render_template('work_with_sales.html', sales=sales)
+
+@app.route('/show/sale/<string:name_of_sale>', methods=["GET", "POST"])
+def show_sale(name_of_sale):
+    pm = ProductModel(db.get_connection())
+    if (request.method=="POST"):
+        file = open(os.getcwd() + slashes + "sales" + slashes + name_of_sale + ".txt", 'r')
+        ch_product = dict()
+        i = 0
+        s=""
+        for line in file:
+            if (i>2):
+                product = line.strip().split("|")
+                if (type(pm.get(int(product[0]))).__name__!='NoneType'):
+                    ch_product[product[0]]=float(product[1])
+            else:
+                s+=line
+            i+=1
+
+        for key in ch_product.keys():
+            if (request.form[key]!=''):
+                ch_product[product[0]]=float(request.form[key])
+        file.close()
+        file = open(os.getcwd() + slashes + "sales" + slashes + name_of_sale + ".txt", 'w')
+        file.write(s)
+        for key in ch_product.keys():
+            file.write(key+"|"+str(ch_product[key])+"\n")
+        file.close()
+    file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'r')
+    i = 0
+    products = []
+    pm = ProductModel(db.get_connection())
+    for line in file:
+        if (i>2):
+            product = line.strip().split("|")
+            product[0]=int(product[0])
+            pr = pm.get(product[0])
+            if (type(pr).__name__!='NoneType'):
+                products+=[[product[0], pr[1], product[1]]]
+        i+=1
+    file.close()
+    url = " show sale "+name_of_sale
+    return render_template('work_with_sale.html', products=products, name_of_sale=name_of_sale, url = url)
+
+@app.route('/create/sale', methods=["GET", "POST"])
+def create_sale():
+    csf = CreateSaleForm()
+    args=[]
+    if (request.method=="POST"):
+        sm = ShopModel(db.get_connection())
+        date1 = request.form['start_of_sale']
+        date2 = request.form['end_of_sale']
+        date3 = str(datetime.date.today())
+        if (date2 < date1):
+            args+=["end < start"]
+        if (date3 > date1):
+            args+=["start < time"]
+        if (date3 > date2):
+            args+=["end < time"]
+        sales = os.listdir(os.getcwd()+slashes+"sales")
+        sales=[i[0:len(i)-4] for i in sales]
+        try:
+            sales.index(csf.name.data)
+            args+=["exists"]
+        except ValueError:
+            if (args==[]):
+                args+=["OK"]
+                print(csf.places.data)
+                file = open(os.getcwd()+slashes+"sales"+slashes+csf.name.data+".txt", 'x')
+                places = []
+                try:
+                    csf.places.data.index('Все')
+                    places =sm.get_all()
+                    places = [str(i[0]) for i in places]
+                except ValueError:
+                    for place in csf.places.data:
+                        places += [str(sm.get_id(place)[0])]
+                file.write(csf.name.data+"\n"+date1+" "+date2+"\n"+" ".join(places)+"\n")
+                file.close()
+    sm = ShopModel(db.get_connection())
+    shops = sm.get_all()
+    shops = [i[1] for i in shops]
+    shops+=["Все"]
+    print(shops)
+    csf.places.choices = shops
+    return render_template('create_sale.html', form=csf, args=args)
+
+@app.route('/delete/sale/<string:name_of_sale>', methods=["GET", "POST"])
+def delete_sale(name_of_sale):
+    os.remove(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt")
+    return redirect('/show/sales')
+
+@app.route('/choose/product/sale/<string:name_of_sale>/<string:ret_url>', methods = ["GET", "POST"])
+def choose_product_to_sale(name_of_sale, ret_url):
+    cp = ChooseProduct()
+    pm = ProductModel(db.get_connection())
+    args=["sale"]
+    cm = CategoryModel(db.get_connection())
+    ret_url = '/'.join(ret_url.split(" "))
+    if (request.method=="POST"):
+        if (pm.exists(cp.select2.data)[0]):
+            file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'r')
+            kek = True
+            i = 0
+            id_pr = pm.get_id(cp.select2.data)[0]
+            print(id_pr)
+            for line in file:
+                if (i>2):
+                    pr = line.strip().split("|")
+                    if pr[0]==str(id_pr):
+                        kek = False
+                i+=1
+            file.close()
+            if (kek):
+                args+=["OK"]
+                product = pm.get(id_pr)
+                file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'a')
+                file.write(str(id_pr)+"|"+str(product[2])+"\n")
+                file.close()
+            else:
+                args+=["exists"]
+            cp.select2.data=None
+        else:
+            products =cm.get_products(cm.get_id(cp.select1.data)[0])[0].split()
+            productss=" "
+            pr = []
+            for product in products:
+                if (type(pm.get(int(product))).__name__!="NoneType"):
+                    productss+=product+" "
+                    item = pm.get(int(product))
+                    pr+=[item[1]]
+            pr.sort()
+            cp.select2.choices=pr
+            args+=["choose_product"]
+            return render_template('choose_product.html', form = cp, args = args , url = ret_url, name_of_sale=name_of_sale)
+    args+=["choose_category"]
+    categories = cm.get_all()
+    categories=[i[1] for i in categories]
+    cp.select1.choices=categories
+    return render_template('choose_product.html', name_of_sale=name_of_sale, form = cp, args=args, url = ret_url)
+
+@app.route('/choose/category/sale/<string:name_of_sale>/<string:ret_url>', methods  = ["GET", "POST"])
+def choose_category_to_sale(name_of_sale, ret_url):
+    args = ["category"]
+    cp = ChooseProduct()
+    cm = CategoryModel(db.get_connection())
+    pm = ProductModel(db.get_connection())
+    name_of_category = ""
+    if (request.method=="POST"):
+        if (type(cm.get_id(cp.select1.data)).__name__!="NoneType"):
+            products = cm.get_products(cm.get_id(cp.select1.data)[0])[0].split()
+            productss=[]
+            for product in products:
+                if (type(pm.get(product)).__name__!="NoneType"):
+                    productss+=[product]
+            cm.update(id = cm.get_id(cp.select1.data)[0], products=" ".join(productss)+" ")
+            products=productss
+            name_of_category=cp.select1.data
+            pr_dict = dict()
+            for product in products:
+                pr_dict[product]=0
+            file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'r')
+            i=0
+            for line in file:
+               if (i>2):
+                    item = line.strip().split("|")
+                    if item[0] in pr_dict.keys():
+                        pr_dict[item[0]]=1
+               i+=1
+            file.close()
+            file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'a')
+            kek = False
+            for product in pr_dict.keys():
+                if (not pr_dict[product]):
+                    pr = pm.get(int(product))
+                    file.write(product+"|"+str(pr[2])+"\n")
+                    kek = True
+            if (kek):
+                args+=["OK"]
+            else:
+                args+=["exists"]
+            file.close()
+    args+=["choose_category"]
+    categories = cm.get_all()
+    categories=[category[1] for category in categories]
+    cp.select1.choices=categories
+    url = '/'.join(ret_url.split(" "))
+    return render_template('choose_product.html', args = args, form = cp, name_of_sale=name_of_sale, name_of_category=name_of_category, url = url)
+
+@app.route('/delete/sale/<string:name_of_sale>/product/<int:id>/<string:ret_url>', methods=["GET", "POST"])
+def delete_from_sale(name_of_sale, id, ret_url):
+    i = 0
+    s=""
+    file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'r')
+    for line in file:
+        if (i>2):
+            if (str(id)!=line.strip().split("|")[0]):
+                s+=line
+        else:
+            s+=line
+        i+=1
+    file.close()
+    file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'w')
+    file.write(s)
+    file.close()
+    url = '/'.join(ret_url.split(" "))
+    return redirect(url)
 @app.route('/exit')
 def ex():
     if "username" in session.keys():

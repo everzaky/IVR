@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,  SubmitField, SelectField, FileField, PasswordField, MultipleFileField, IntegerField, TextAreaField, BooleanField, DecimalField, FloatField
+from wtforms import StringField,  SubmitField, SelectField, FileField, PasswordField, MultipleFileField, IntegerField, TextAreaField, BooleanField, DecimalField, FloatField, DateField, SelectMultipleField
 from wtforms.validators import  DataRequired
 
 class ChooseProduct(FlaskForm):
@@ -79,3 +79,8 @@ class PosProduct(FlaskForm):
 class ShablonForm(FlaskForm):
     name = StringField()
     submit = SubmitField()
+
+class CreateSaleForm(FlaskForm):
+    name = StringField()
+    submit = SubmitField()
+    places = SelectMultipleField()
