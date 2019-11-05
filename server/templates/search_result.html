@@ -212,7 +212,7 @@
             {% endif %}
             {% if res["search_result"][0][3][1] %}
                 <p>Возможно, вы искали следующие товары:</p>
-                {%  for product in res["search_result"][0][3][0] %}
+                {%  for product in res["search_result"][0][3][0][0] %}
                     <div>
                         <p>{{ product[1] }}</p>
                         <br>

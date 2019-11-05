@@ -1,39 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ee2640c5-13c1-4302-aa47-6c3752d5f2b1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/musor/choose_product.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/musor/pos_product.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/musor/recreate_category.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/musor/recreate_country.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/musor/work_with_countries.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/musor/work_with_shops.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/product_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/product_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shop_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/shop_db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shop_product_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/shop_product_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/countries/Австралия" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/countries/Австралия.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/countries/Чили.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/Пенилюкс_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/Пенилюкс_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/Пенилюкс_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/Пенилюкс_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/shops/Гагаринский/database.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/shops/Гагаринский/img/1_1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/shops/Гагаринский/img/1_2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/add_favourite_product.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/choose_product.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/choose_product.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/favourite_products.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/favourite_products.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/pos_product.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/pos_product.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/product.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/product.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/search_result.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/search_result.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/work_with_shop.html" beforeDir="false" />
-    </list>
+    <list default="true" id="ee2640c5-13c1-4302-aa47-6c3752d5f2b1" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,11 +33,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Flask Main" />
         <option value="JavaScript File" />
         <option value="CSS File" />
         <option value="HTML File" />
         <option value="Python Script" />
+        <option value="Flask Main" />
       </list>
     </option>
   </component>
@@ -91,7 +59,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/venv/Include" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -115,7 +83,29 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Flask server.Flask">
+  <component name="RunManager" selected="Python.sales">
+    <configuration name="db" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="server" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/db.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="kek" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -160,12 +150,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Flask (app.py)" type="Python.FlaskServer" temporary="true" nameIsGenerated="true">
+      <module name="server" />
+      <option name="target" value="$PROJECT_DIR$/app.py" />
+      <option name="targetType" value="PATH" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="D:\E1\ИВР\server\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="Flask" type="Python.FlaskServer" nameIsGenerated="true">
       <module name="server" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="C:\Users\paulo\Documents\IVR\server\venv\Scripts\python.exe" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="SDK_HOME" value="D:\E1\IVR\server\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -186,14 +191,34 @@
       <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
+    <configuration name="server" type="Python.FlaskServer">
+      <module name="server" />
+      <option name="target" value="$PROJECT_DIR$/app.py" />
+      <option name="targetType" value="PATH" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="D:\E1\IVR\server\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="false" />
+      <option name="ADD_SOURCE_ROOTS" value="false" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Flask server.Flask" />
+      <item itemvalue="Flask server.server" />
+      <item itemvalue="Flask server.Flask (app.py)" />
       <item itemvalue="Python.kek" />
       <item itemvalue="Python.sales" />
+      <item itemvalue="Python.db" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.sales" />
+        <item itemvalue="Flask server.Flask (app.py)" />
+        <item itemvalue="Python.db" />
         <item itemvalue="Python.kek" />
       </list>
     </recent_temporary>
@@ -232,6 +257,12 @@
       <workItem from="1572335048045" duration="4817000" />
       <workItem from="1572365343014" duration="15905000" />
       <workItem from="1572422504459" duration="17144000" />
+      <workItem from="1572708434479" duration="614000" />
+      <workItem from="1572709521872" duration="1880000" />
+      <workItem from="1572711693999" duration="1892000" />
+      <workItem from="1572713646161" duration="13215000" />
+      <workItem from="1572822267453" duration="9170000" />
+      <workItem from="1572880935800" duration="39202000" />
     </task>
     <servers />
   </component>
@@ -263,14 +294,9 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/app.py</url>
-          <line>152</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/app.py</url>
-          <line>922</line>
-          <option name="timeStamp" value="7" />
+          <url>file://$PROJECT_DIR$/sales.py</url>
+          <line>19</line>
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -288,9 +314,11 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/server$sales.coverage" NAME="sales Coverage Results" MODIFIED="1572448115488" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/server$Flask.coverage" NAME="Flask Coverage Results" MODIFIED="1572448202239" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/server$server.coverage" NAME="server Coverage Results" MODIFIED="1571606281179" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/server$server.coverage" NAME="server Coverage Results" MODIFIED="1572971011540" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/server$db.coverage" NAME="db Coverage Results" MODIFIED="1572713144629" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/server$sales.coverage" NAME="sales Coverage Results" MODIFIED="1572974896527" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/server$kek.coverage" NAME="kek Coverage Results" MODIFIED="1571929304354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/server$Flask.coverage" NAME="Flask Coverage Results" MODIFIED="1572714114542" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/venv" />
+    <SUITE FILE_PATH="coverage/server$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1572880697448" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

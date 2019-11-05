@@ -13,10 +13,10 @@
     <p>Текущее количество товара: {{ item[5] }}</p>
     <br>
     <p>Цена в магазине:
-        {% if time >item[3] and time<item[4] %}
+        {% if time >=item[3] and time<=item[4] %}
             <span style="text-decoration: line-through">{{ item[1] }}</span> <span>{{ item[2] }}</span>
         {% endif %}
-        {% if not(time >item[3] and time<item[4]) %}
+        {% if not(time >= item[3] and time <= item[4]) %}
             <span>{{ item[1] }}</span>
         {% endif %}
     </p>

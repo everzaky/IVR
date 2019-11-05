@@ -21,8 +21,15 @@ ShopModel(db.get_connection()).init_table()
 sm = ShopModel(db.get_connection())
 while (True):
     products = pm.get_all()
+    shops = sm.get_all()
     for product in products:
         pm.update(id = product[0], date_of_start=str(datetime.date(2018,1,1)), date_of_end=str(datetime.date(2018, 1, 1)))
+        for shop in shops:
+            db_shop=DB_SHOP(shop[1], slashes)
+            ProductShopModel(db_shop.get_connection())
+            shop_model = ProductShopModel(db_shop.get_connection())
+            if (type(shop_model.get_id(product[1])).__name__!='NoneType'):
+                shop_model.update(shop_model.get_id(product[1])[0], date_of_start=str(datetime.date(2018,1,1)), date_of_end=str(datetime.date(2018,1,1)))
     sales = os.listdir(os.getcwd()+slashes+"sales")
     td = str(datetime.date.today())
     for sale in sales:
@@ -59,7 +66,7 @@ while (True):
                     if (type(pm.get(int(item[0]))).__name__!="NoneType"):
                         product=pm.get(int(item[0]))
                         if (product[4]<=td and product[5]>=td):
-                            if (product[2]<float(item[1])):
+                            if (product[2]>float(item[1])):
                                 pm.update(id = int(item[0]), sale=float(item[1]), date_of_end=date_end, date_of_start=date_st)
                         else:
                             pm.update(id = int(item[0]), sale=float(item[1]), date_of_start=date_st, date_of_end=date_end)
@@ -71,9 +78,10 @@ while (True):
                                 shop_model.insert(name_of_product=product[1], date_of_end=str(datetime.date(2018, 1, 1)), date_of_start=str(datetime.date(2018, 1, 1)), location='', number_of_product=0, price=product[2], price_sale=product[3])
                             sh_product = shop_model.get(shop_model.get_id(product[1])[0])
                             if (sh_product[6]<=td and sh_product[7]>=td):
-                                if (sh_product[5]<float(item[1])):
+                                if (sh_product[5]>float(item[1])):
                                     shop_model.update(sh_product[0], price_sale=float(item[1]), date_of_start=date_st, date_of_end=date_end)
                             else:
+                                print('kek', date_st, date_end)
                                 shop_model.update(sh_product[0], price_sale=float(item[1]), date_of_start=date_st,
                                                   date_of_end=date_end)
 

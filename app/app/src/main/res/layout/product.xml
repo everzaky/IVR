@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_marginTop="10dp">
+
+    <TextView
+        android:id="@+id/name_of_product"
+        android:layout_width="288dp"
+        android:layout_height="27dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="44dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/product_img"
+        android:layout_width="77dp"
+        android:layout_height="73dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name_of_product"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/product_price"
+        android:layout_width="78dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="156dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name_of_product" />
+
+    <TextView
+        android:id="@+id/product_price_sale"
+        android:layout_width="73dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toEndOf="@+id/product_price"
+        app:layout_constraintTop_toBottomOf="@+id/name_of_product" />
+
+    <Button
+        android:id="@+id/search_add_busket"
+        android:layout_width="191dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="60dp"
+        android:text="Добавить в корзину"
+        android:tag="sdf"
+        app:layout_constraintStart_toEndOf="@+id/product_img"
+        app:layout_constraintTop_toBottomOf="@+id/name_of_product" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

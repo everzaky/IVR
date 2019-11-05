@@ -58,7 +58,7 @@ class ProductShopModel:
         if (date_of_start!=None):
             cursor.execute('''UPDATE shop SET date_of_start = ? WHERE id = ?''', (date_of_start, id, ))
         if (date_of_end!=None):
-            cursor.execute('''UPDATE shop SET date_of_start = ? WHERE id = ?''', (date_of_end, id, ))
+            cursor.execute('''UPDATE shop SET date_of_end = ? WHERE id = ?''', (date_of_end, id, ))
         cursor.close()
         self.connection.commit()
 

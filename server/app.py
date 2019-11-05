@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify, Response, send_file
 from users_model import UsersModel
 from db import DB
 from category_model import CategoryModel
@@ -27,6 +27,8 @@ if platform.system() == "Windows":
     slashes = "\\"
 else:
     slashes = "/"
+
+print(os.getcwd())
 app = Flask(__name__, static_folder=os.getcwd()+slashes+"static")
 db = DB(slashes)
 
@@ -206,17 +208,21 @@ def create_product():
             id_category = CM.get_id(Pf.select.data)[0]
             id_producer = prm.get_id(Pf.producer.data)[0]
             id_country = conm.get_id(Pf.country.data)[0]
-            for img in Pf.file.data:
-                trash = img.filename.split(".")
-                img.filename = "_".join(Pf.name.data.split())+"_"+str(i)+"."+trash[len(trash)-1]
-                i+=1
-                images+=img.filename+" "
-                img.save(os.path.join(app.config["UPLOAD_FOLDER"], img.filename))
+
             print(type(Pf.price.data), type(Decimal("0.0")))
             print(type(Pf.name.data), type(Pf.price.data), type(Decimal('0.0')), type(str(datetime.datetime.now)), type(datetime.datetime.now()), type(images), type(Pf.text.data), type(id_country), type(id_producer), type(id_category))
             pm.insert(Pf.name.data, Pf.price.data, float(0), str(datetime.date(year=2018, month=1, day=1)), str(datetime.datetime.now()),
-                      images, Pf.text.data, id_country, id_producer, id_category)
+                      "", Pf.text.data, id_country, id_producer, id_category)
             id_product = pm.get_id(Pf.name.data)[0]
+            images = ""
+            i=1
+            for img in Pf.file.data:
+                trash = img.filename.split(".")
+                img.filename = str(id_product)+"_"+str(i)+"."+trash[len(trash)-1]
+                i+=1
+                images+=img.filename+" "
+                img.save(os.path.join(app.config["UPLOAD_FOLDER"], img.filename))
+            pm.update(id = id_product, list_of_photos = images)
             products = CM.get_products(id_category)[0]
             products+=" "+str(id_product)
             print(products)
@@ -381,14 +387,15 @@ def search(filter, value):
                     if (type(id_pr).__name__ != "NoneType"):
                         av_shop += [shop]
                 print([product[0], product[1], product[2], product[3], product[4], product[5],
+                       product[6].split()[0], product[7], ctm.get(product[8])[1],
+                       ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop])
+                product_items += [[product[0], product[1], product[2], product[3], product[4], product[5],
                                   product[6].split()[0], product[7], ctm.get(product[8])[1],
-                                  ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop])
-                product_items += [product[0], product[1], product[2], product[3], product[4], product[5],
-                                  product[6].split()[0], product[7], ctm.get(product[8])[1],
-                                  ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop]
+                                  ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop]]
         product_result = [[product_items], (len(product_items)>0)]
         search_result = [category_result, producer_result, country_result, product_result]
         res["search_result"]=[search_result, search_result[0][1] or search_result[1][1] or search_result[2][1] or search_result[3][1]]
+        print(res)
     url = " search "+str(filter)+" "+str(value)
     print(datetime.date.today())
     return render_template('search_result.html', res = res, url=url, shops = shops, date=str(datetime.date.today()), list_of_shablons=list_of_shablons, shablons_true=shablons_true)
@@ -444,7 +451,7 @@ def pos_product(id_pr, id_sh, ret_url):
     id_product = shop_product_model.get_id(name_of_product)
     if (type(id_product).__name__=='NoneType'):
         price = pm.get(id_pr)[2]
-        shop_product_model.insert(name_of_product, location='', number_of_product=0, price=price, price_sale=0, date_of_end=(datetime.datetime.now()), date_of_start=(datetime.datetime.now()))
+        shop_product_model.insert(name_of_product, location='', number_of_product=0, price=price, price_sale=0, date_of_end=(datetime.date.today()), date_of_start=(datetime.date.today()))
         shop_product_model = ProductShopModel(db_shop.get_connection())
     if (request.method == "POST"):
         id_product = shop_product_model.get_id(name_of_product)[0]
@@ -462,7 +469,7 @@ def pos_product(id_pr, id_sh, ret_url):
         s=locations
         s=s[0:len(s)-1]
         pos_products = [[int(i.split(':')[0]), [list(map(str, j.split("|"))) for j in i.split(':')[1].split()]] for i in
-                    s.split('_')]
+                        s.split('_')]
     else:
         pos_products=[]
     images = os.listdir(os.getcwd()+slashes+'static'+slashes+'shops'+slashes+name_of_shop+slashes+"img")
@@ -514,8 +521,9 @@ def show_pos(id_pr, id_sh, ret_url):
         for j in i[1]:
             images[i[0]][3].append(j)
     item=[product[1], product[4], product[5], product[6], product[7], product_number]
+    print(item)
     ret_url = '/'.join(ret_url.split(" "))
-    return render_template('show_pos_product.html', time=str(datetime.datetime.now()), item=item, ret_url=ret_url, images=images, name_of_shop=name_of_shop)
+    return render_template('show_pos_product.html', time=str(datetime.date.today()), item=item, ret_url=ret_url, images=images, name_of_shop=name_of_shop)
 
 @app.route('/show/shop')
 def show_shop():
@@ -617,24 +625,24 @@ def forgot_password():
             username = fp.email.data
             email = us.get_email(username)
         if (username!=None and email!=None):
-                if (b):
-                    username=username[0]
-                else:
-                    email = email[0]
-                fromaddr = "pauchan.mobile@gmail.com"
-                toaddr = email
-                msg = MIMEMultipart()
-                msg['From'] = fromaddr
-                msg['To'] = toaddr
-                msg['Subject'] = "Смена пароля на сайте pauchan.pythonanywhere.com"
-                body = "Если вы хотите сменить пароль перейдите по ссылке ниже:\n" + "http://127.0.0.1:5000/reset_password/" +  username
-                print (body)
-                msg.attach(MIMEText(body, 'plain'))
-                text = msg.as_string()
-                server = smtplib.SMTP('smtp.gmail.com:587')
-                server.starttls()
-                server.login('pauchan.mobile@gmail.com', 'pzqorfulfgihbxuf')
-                server.sendmail(fromaddr, toaddr, text)
+            if (b):
+                username=username[0]
+            else:
+                email = email[0]
+            fromaddr = "pauchan.mobile@gmail.com"
+            toaddr = email
+            msg = MIMEMultipart()
+            msg['From'] = fromaddr
+            msg['To'] = toaddr
+            msg['Subject'] = "Смена пароля на сайте pauchan.pythonanywhere.com"
+            body = "Если вы хотите сменить пароль перейдите по ссылке ниже:\n" + "http://127.0.0.1:5000/reset_password/" +  username
+            print (body)
+            msg.attach(MIMEText(body, 'plain'))
+            text = msg.as_string()
+            server = smtplib.SMTP('smtp.gmail.com:587')
+            server.starttls()
+            server.login('pauchan.mobile@gmail.com', 'pzqorfulfgihbxuf')
+            server.sendmail(fromaddr, toaddr, text)
         return render_template("forgot_password.html", text="email_was_sent")
     else:
         return render_template("forgot_password.html", text="write_email", form = fp)
@@ -1033,19 +1041,19 @@ def show_sales():
         file = open(os.getcwd()+slashes+"sales"+slashes+sale)
         av_sale = []
         for line in file:
-             if (i==0):
-                 av_sale += [line.strip()]
-             elif i==1:
-                 av_sale += line.strip().split()
-             elif i==2:
-                 shops = line.strip().split()
-                 sh=[]
-                 for shop in shops:
-                     item = sm.get(shop)
-                     if (type(item).__name__!="NoneType"):
-                         sh+=[item[1]]
-                 av_sale+=[[" ".join(sh)]]
-             i+=1
+            if (i==0):
+                av_sale += [line.strip()]
+            elif i==1:
+                av_sale += line.strip().split()
+            elif i==2:
+                shops = line.strip().split()
+                sh=[]
+                for shop in shops:
+                    item = sm.get(shop)
+                    if (type(item).__name__!="NoneType"):
+                        sh+=[item[1]]
+                av_sale+=[[" ".join(sh)]]
+            i+=1
         av_sale+=[i-3]
         file.close()
         sales+=[av_sale]
@@ -1213,11 +1221,11 @@ def choose_category_to_sale(name_of_sale, ret_url):
             file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'r')
             i=0
             for line in file:
-               if (i>2):
+                if (i>2):
                     item = line.strip().split("|")
                     if item[0] in pr_dict.keys():
                         pr_dict[item[0]]=1
-               i+=1
+                i+=1
             file.close()
             file = open(os.getcwd()+slashes+"sales"+slashes+name_of_sale+".txt", 'a')
             kek = False
@@ -1267,6 +1275,231 @@ def ex():
     session.modified=True
     return redirect('/')
 
+
+@app.route('/check/user/<string:username>/<string:password>', methods=['GET', 'POST'])
+def check_user(username, password):
+    um = UsersModel(db.get_connection())
+    if (um.exists(username, password)[0]):
+        return jsonify(answer="OK")
+    else:
+        return jsonify(answer="Problem")
+
+@app.route('/android/get/categories')
+def android_get_catrgories():
+    cm = CategoryModel(db.get_connection())
+    categories = cm.get_all()
+    categories_numbers = [category[0] for category in categories]
+    categories_names = [category[1] for category in categories]
+    return jsonify(categories_names=json.dumps(categories_names), categories_numbers=json.dumps(categories_numbers))
+
+@app.route('/android/get/product/<int:id>')
+def android_get_product(id):
+    pm = ProductModel(db.get_connection())
+    product = pm.get(id)
+    if (type(product).__name__=="NoneType"):
+        return Response(status=404)
+    else:
+        print(product)
+        return jsonify(id = json.dumps(product[0]), name = product[1], price = json.dumps(product[2]), sale = json.dumps(product[2]), is_sale = json.dumps((product[4]<=str(datetime.date.today()) and str(datetime.date.today())<=product[5])), image = product[6].split()[0])
+
+@app.route('/android/get/shop/<int:id>')
+def android_get_shop(id):
+    sm = ShopModel(db.get_connection())
+    shop = sm.get(id)
+
+    if (type(shop).__name__!="NoneType"):
+        images=os.listdir(os.getcwd() + slashes + 'static' + slashes + 'shops' + slashes + shop[1] + slashes + "img")
+        return jsonify(images=images)
+    else:
+        return Response(status=404)
+
+@app.route('/android/get/shop/picture/<int:id>/<string:name>')
+def android_get_pictur(id, name):
+    sm = ShopModel(db.get_connection())
+    shop = sm.get(id)
+    return send_file(os.getcwd()+slashes+'static'+slashes+"shops"+slashes+shop[1]+slashes+"img"+slashes+name)
+
+@app.route('/android/get/product/shop/<int:id_sh>/product/<int:id>')
+def get_product_from_shop(id_sh, id):
+    pm = ProductModel(db.get_connection())
+    product = pm.get(id)
+    sm = ShopModel(db.get_connection())
+    shop = sm.get(id_sh)
+    db_shop = DB_SHOP(shop[1],slashes)
+    shop_model=ProductShopModel(db_shop.get_connection())
+    id_sh_product=shop_model.get_id(product[1])
+    if (type(id_sh_product).__name__=="NoneType"):
+        shop_model.insert(product[1],'',0, product[2], product[3], str(datetime.date(2018, 1, 1)), str(datetime.date(2018, 1, 1)))
+    id_sh_product=shop_model.get_id(product[1])[0]
+    sh_product = shop_model.get(id_sh_product)
+    number = sh_product[3]
+    image = product[6].split()[0]
+    name = product[1]
+    return jsonify(name = name, id = id_sh_product, image = image, number=number,price = sh_product[4], is_sale=((sh_product[6]<=str(datetime.date.today()) and str(datetime.date.today())<=sh_product[7])), sale = sh_product[5])
+
+@app.route('/android/get/shops')
+def android_get_shops():
+    sm = ShopModel(db.get_connection())
+    shops = sm.get_all()
+    names = [shop[1] for shop in shops]
+    ids = [shop[0] for shop in shops]
+    return jsonify(names = names, ids = ids)
+
+@app.route('/android/get/product/picture/<string:name>', methods=["GET"])
+def android_get_picture_of_product(name):
+    if (name.find('"')!=-1):
+        name=name[0:name.find('"')]+name[name.find('"'):len(name)]
+        if (name.find('"')!=-1):
+            name=name[0:name.find('"')]+name[name.find('"'):len(name)]
+    print(name)
+    return send_file(os.getcwd()+slashes+'static'+slashes+'img'+slashes+name, mimetype="image/"+name[name.find('.')+1:len(name)])
+
+
+@app.route('/android/search/<string:filter>/<string:value>', methods=['GET', 'POST'])
+def android_search(filter, value):
+    res = dict()
+    sm = ShopModel(db.get_connection())
+    shops = sm.get_all()
+    shops = [[i[1], i[0]] for i in  shops]
+    shops.sort()
+    list_of_shablons=[]
+    shablons_true=False
+    if "username" in session.keys():
+        shablons_true=True
+        list_of_shablons = os.listdir(os.getcwd()+slashes+"users"+slashes+session['username'] +slashes+"favourite_templates")
+        list_of_shablons=[i[0:len(i)-4] for i in list_of_shablons]
+
+    if (filter=="category"):
+        cm = CategoryModel(db.get_connection())
+        name_of_category = cm.get(int(value))[1]
+        pm = ProductModel(db.get_connection())
+        ctm = CountryModel(db.get_connection())
+        prm = ProducerModel(db.get_connection())
+        products = cm.get_products(int(value))[0].split()
+        ids=[]
+        names=[]
+        prices=[]
+        is_sale=[]
+        sales = []
+        images=[]
+        td = str(datetime.date.today())
+        product=" "
+        for i in products:
+            item = pm.get(int(i))
+            if (item!=None):
+                product+=i+" "
+                ids+=[item[0]]
+                names+=[item[1]]
+                prices+=[item[2]]
+                if (item[4]<=td and td<=item[5]):
+                    is_sale+=[True]
+                else:
+                    is_sale+=[False]
+                sales+=[item[3]]
+                images+=[item[6].split()[0]]
+
+        ids = json.dumps(ids)
+        names = json.dumps(names)
+        prices = json.dumps(prices)
+        is_sale = json.dumps(is_sale)
+        sales = json.dumps(sales)
+        images = json.dumps(images)
+        return jsonify(ids = ids, names = names, prices = prices, is_sale = is_sale, sales = sales, images = images)
+    if (filter=="search"):
+        pm = ProductModel(db.get_connection())
+        cm = CategoryModel(db.get_connection())
+        ctm = CountryModel(db.get_connection())
+        prm = ProducerModel(db.get_connection())
+        categories = cm.get_all()
+        category_items=[]
+        for category in categories:
+            if (category[1].find(value)!=-1):
+                category_items+=[category[0], category[1]]
+        category_result = [[category_items], (len(category_items)>0)]
+        producers = prm.get_all()
+        producer_items = []
+        for producer in producers:
+            if (producer[1].find(value)!=-1):
+                producer_items+=[producer[0], producer[1]]
+        producer_result = [[producer_items], (len(producer_items)>0)]
+        countries = ctm.get_all()
+        countries_items = []
+        for country in countries:
+            if (country[1].find(value)!=-1):
+                countries_items+=[country[0], country[1]]
+        country_result=[[countries_items], (len(countries_items)>0)]
+        products=pm.get_all()
+        product_items = []
+        for product in products:
+            if (product[1].find(value)!=-1):
+                av_shop = []
+                for shop in shops:
+                    db_shop = DB_SHOP(shop[0], slashes)
+                    ProductShopModel(db_shop.get_connection()).init_table()
+                    shop_model = ProductShopModel(db_shop.get_connection())
+                    id_pr = shop_model.get_id(product[1])
+                    if (type(id_pr).__name__ != "NoneType"):
+                        av_shop += [shop]
+                print([product[0], product[1], product[2], product[3], product[4], product[5],
+                       product[6].split()[0], product[7], ctm.get(product[8])[1],
+                       ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop])
+                product_items += [[product[0], product[1], product[2], product[3], product[4], product[5],
+                                   product[6].split()[0], product[7], ctm.get(product[8])[1],
+                                   ctm.get_flag(product[8])[0], prm.get(product[9])[1], cm.get(product[10])[1], av_shop]]
+        product_result = [[product_items], (len(product_items)>0)]
+        search_result = [category_result, producer_result, country_result, product_result]
+        res["search_result"]=[search_result, search_result[0][1] or search_result[1][1] or search_result[2][1] or search_result[3][1]]
+        print(res)
+    url = " search "+str(filter)+" "+str(value)
+    print(datetime.date.today())
+    return jsonify(res)
+
+@app.route('/android/get/locations/shop/<int:id>/product/<int:pr>')
+def get_locations(id, pr):
+    pm = ProductModel(db.get_connection())
+    name_of_product = pm.get(pr)[1]
+    sm = ShopModel(db.get_connection())
+    name_of_shop = sm.get(id)[1]
+    db_shop = DB_SHOP(name_of_shop, slashes)
+    ProductShopModel(db.get_connection()).init_table()
+    shop_product_model = ProductShopModel(db_shop.get_connection())
+    id_product = shop_product_model.get_id(name_of_product)[0]
+    product = shop_product_model.get(id_product)
+    product_number = product[3]
+    locations = product[2]
+    if (locations!=''):
+        pos_product=[]
+        s = locations
+        s = s[0:len(s) - 1]
+        pos_products = [[int(i.split(':')[0]), [list(map(str, j.split("|"))) for j in i.split(':')[1].split()]] for i in
+                        s.split('_')]
+        poss=[]
+        width = []
+        for i in pos_products:
+            kek=[]
+            for j in i[1]:
+                kek.append(int(j[0][0:len(j[0])-2]))
+            poss.append([i[0],kek])
+        width=poss
+        kk = []
+        for i in pos_products:
+            kek=[]
+            for j in i[1]:
+                kek.append(int(j[1][0:len(j[1])-2]))
+            kk.append([i[0],kek])
+        height=kk
+    else:
+        locations=[]
+        pos_products=[]
+        kol = len(os.listdir(os.getcwd()+slashes+"static"+slashes+"shops"+slashes+sm.get(id)[1]+slashes+"img"))
+        width=[]
+        for i in range(kol):
+            width.append([i,[]])
+        height=[]
+        for i in range(kol):
+            height.append([i,[]])
+    return jsonify(width = width, height=height)
+
 @app.errorhandler(404)
 def not_found(e):
     return "Not Found", 404
@@ -1284,9 +1517,10 @@ def dated_url_for(endpoint, **values):
         filename = values.get('filename', None)
         if filename:
             file_path = os.path.join(app.root_path,
-                                 endpoint, filename)
+                                     endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
