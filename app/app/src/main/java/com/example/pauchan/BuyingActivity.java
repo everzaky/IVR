@@ -53,7 +53,7 @@ public class BuyingActivity extends AppCompatActivity {
                 name.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        
+
                     }
                 });
                 ImageView imageView = (ImageView) v.findViewById(R.id.buying_image);
@@ -78,7 +78,7 @@ public class BuyingActivity extends AppCompatActivity {
                 });
 
                 TextView price = (TextView) v.findViewById(R.id.product_price_buying);
-                TextView sale = (TextView) v.findViewById(R.id.product_price_sale);
+                TextView sale = (TextView) v.findViewById(R.id.product_sale_price_buying);
                 if (is_sale[i]) {
                     price.setText(prices[i].toString());
                     price.setPaintFlags(price.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);

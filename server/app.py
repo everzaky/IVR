@@ -1078,7 +1078,7 @@ def show_sale(name_of_sale):
 
         for key in ch_product.keys():
             if (request.form[key]!=''):
-                ch_product[product[0]]=float(request.form[key])
+                ch_product[key]=float(request.form[key])
         file.close()
         file = open(os.getcwd() + slashes + "sales" + slashes + name_of_sale + ".txt", 'w')
         file.write(s)

@@ -54,7 +54,6 @@ public class GetLocations extends AsyncTask<String, Void, String> {
                 for (int i = 0; i<jsonArray1.length(); i++){
                     Integer[] width = (Integer[]) jsonArray1.get(i);
                     Integer[] height = (Integer[]) jsonArray2.get(i);
-
                     for (int j = 0; j<width.length; j++){
                        // AbsoluteLayout absoluteLayout = (AbsoluteLayout) ((HorizontalScrollView) liner.getChildAt(0)).getChildAt(0);
 
